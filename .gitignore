@@ -31,3 +31,7 @@ blob-report
 !.vscode/extensions.json
 .idea
 *.log
+
+# Local-only Playwright specs (e.g. visual review)
+*.local.spec.ts
+dist-e2e

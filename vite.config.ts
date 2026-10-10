@@ -14,10 +14,16 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router'],
-          supabase: ['@supabase/supabase-js'],
-          motion: ['motion'],
+        // Long-lived vendor chunks cache well across deploys.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (/node_modules\/(react|react-dom|scheduler|react-router)\//.test(id)) return 'react';
+          if (id.includes('@supabase')) return 'supabase';
+          if (/node_modules\/(motion|framer-motion|motion-dom|motion-utils)\//.test(id)) return 'motion';
+          if (/node_modules\/(zod|react-hook-form|@hookform)\//.test(id)) return 'forms';
+          if (/node_modules\/(radix-ui|@radix-ui|@floating-ui|react-remove-scroll|react-remove-scroll-bar|react-style-singleton|use-callback-ref|use-sidecar|aria-hidden|get-nonce|detect-node-es)\//.test(id)) return 'ui';
+          if (id.includes('@tanstack')) return 'query';
+          return undefined;
         },
       },
     },

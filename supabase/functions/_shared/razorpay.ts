@@ -127,12 +127,13 @@ export function createRazorpayApi(options: RazorpayClientOptions): RazorpayApi {
       signal: AbortSignal.timeout(timeoutMs),
     });
     const text = await response.text();
-    let data: unknown = null;
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch {
-      data = null;
-    }
+    const data: unknown = (() => {
+      try {
+        return text ? JSON.parse(text) : null;
+      } catch {
+        return null;
+      }
+    })();
     if (!response.ok) {
       const error = (data as { error?: { code?: string; description?: string } } | null)?.error;
       throw new RazorpayApiError(response.status, error?.code ?? null, error?.description ?? null);

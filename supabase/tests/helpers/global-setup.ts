@@ -48,7 +48,7 @@ export default async function setup(project: TestProject) {
       try {
         await client.query(readFileSync(path.join(migrationsDir, file), 'utf8'));
       } catch (error) {
-        throw new Error(`Migration ${file} failed: ${(error as Error).message}`);
+        throw new Error(`Migration ${file} failed: ${(error as Error).message}`, { cause: error });
       }
     }
     await client.query(readFileSync(path.join(root, 'supabase/seed.sql'), 'utf8'));

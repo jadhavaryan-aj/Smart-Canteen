@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'coverage', 'playwright-report', 'test-results', 'node_modules', 'supabase/.temp'],
+    ignores: ['dist', 'dist-e2e', 'coverage', 'playwright-report', 'test-results', 'node_modules', 'supabase/.temp'],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -21,7 +21,16 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        {
+          allowConstantExport: true,
+          // shadcn-style variant helpers and context hooks live beside their components.
+          allowExportNames: ['buttonVariants', 'badgeVariants', 'useCartDrawer', 'useAdminRealtime'],
+        },
+      ],
+      // Informational only: this project does not enable the React Compiler.
+      'react-hooks/incompatible-library': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
@@ -43,6 +52,11 @@ export default tseslint.config(
       'react-refresh/only-export-components': 'off',
       'no-console': 'off',
     },
+  },
+  {
+    // The router module defines lazy route components; Fast Refresh does not apply to it.
+    files: ['src/app/router.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
   {
     files: ['scripts/**/*.{js,mjs}'],
