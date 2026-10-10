@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+*.tsbuildinfo
+
+# Environment — never commit real credentials
+.env
+.env.*
+!.env.example
+supabase/functions/.env
+supabase/.env
+
+# Supabase local state
+supabase/.temp
+supabase/.branches
+
+# Test artefacts
+coverage
+playwright-report
+test-results
+blob-report
+.db-test
+
+# Editors / OS
+.DS_Store
+*.local
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.log

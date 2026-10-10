@@ -1,0 +1,237 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/*
+ * Campus Table design tokens.
+ * Warm ivory surfaces, deep forest green as the brand colour, charcoal text,
+ * sage accents and restrained neutral borders. Every component reads from
+ * these tokens so the brand can be re-skinned in one place.
+ */
+:root {
+  --radius: 0.875rem;
+
+  --background: #faf7f0;
+  --foreground: #1f1e1b;
+  --card: #fffdf8;
+  --card-foreground: #1f1e1b;
+  --popover: #fffdf8;
+  --popover-foreground: #1f1e1b;
+
+  --primary: #1f3d2b;
+  --primary-hover: #183223;
+  --primary-foreground: #faf7f0;
+
+  --secondary: #eef1e9;
+  --secondary-foreground: #1f3d2b;
+
+  --muted: #f3eee4;
+  --muted-foreground: #625e56;
+
+  --accent: #e3eadd;
+  --accent-foreground: #1f3d2b;
+
+  --sage: #8ea487;
+  --sage-soft: #dce5d5;
+  --honey: #a8701c;
+  --honey-soft: #f8edd6;
+
+  --destructive: #a3362a;
+  --destructive-foreground: #fffdf8;
+
+  --border: #e6dfd2;
+  --input: #d9d0c0;
+  --ring: #2f5a40;
+
+  /* Order status palette — restrained, legible at a distance. */
+  --status-pending: #6b665c;
+  --status-pending-soft: #efebe3;
+  --status-new: #8a5a12;
+  --status-new-soft: #f8ecd2;
+  --status-preparing: #9a4521;
+  --status-preparing-soft: #f8e6dc;
+  --status-ready: #1d6a40;
+  --status-ready-soft: #dcefe2;
+  --status-completed: #3f4a44;
+  --status-completed-soft: #e8ebe8;
+  --status-cancelled: #9b2c2c;
+  --status-cancelled-soft: #f7e3e1;
+
+  /* Food-safety indicators (FSSAI convention). */
+  --veg: #1a7f37;
+  --nonveg: #8b3a1d;
+}
+
+@theme inline {
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Fraunces Variable', ui-serif, Georgia, 'Times New Roman', serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-sage: var(--sage);
+  --color-sage-soft: var(--sage-soft);
+  --color-honey: var(--honey);
+  --color-honey-soft: var(--honey-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-soft: var(--status-pending-soft);
+  --color-status-new: var(--status-new);
+  --color-status-new-soft: var(--status-new-soft);
+  --color-status-preparing: var(--status-preparing);
+  --color-status-preparing-soft: var(--status-preparing-soft);
+  --color-status-ready: var(--status-ready);
+  --color-status-ready-soft: var(--status-ready-soft);
+  --color-status-completed: var(--status-completed);
+  --color-status-completed-soft: var(--status-completed-soft);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-status-cancelled-soft: var(--status-cancelled-soft);
+  --color-veg: var(--veg);
+  --color-nonveg: var(--nonveg);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-3xl: calc(var(--radius) + 18px);
+
+  --shadow-soft: 0 1px 2px rgb(31 30 27 / 0.04), 0 6px 20px -10px rgb(31 30 27 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(31 30 27 / 0.04), 0 18px 36px -18px rgb(31 30 27 / 0.22);
+  --shadow-ring: 0 0 0 1px rgb(31 61 43 / 0.08), 0 10px 30px -14px rgb(31 61 43 / 0.28);
+
+  --animate-highlight: highlight-pulse 2.4s ease-out 1;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(168 112 28 / 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgb(168 112 28 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(168 112 28 / 0);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--sage-soft);
+    color: var(--primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-grain {
+    background-image:
+      radial-gradient(circle at 20% 15%, rgb(142 164 135 / 0.16), transparent 42%),
+      radial-gradient(circle at 85% 80%, rgb(168 112 28 / 0.08), transparent 40%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-surface {
+    box-shadow: none !important;
+    border-color: #ccc !important;
+    background: #fff !important;
+  }
+}
