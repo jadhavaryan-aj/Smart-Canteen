@@ -13,7 +13,9 @@ export async function fetchMyOrders(limit = 30): Promise<MyOrderSummary[]> {
   if (!userId) return [];
   const { data, error } = await getSupabase()
     .from('orders')
-    .select('id, order_number, status, payment_status, total_paise, item_count, created_at, paid_at, payment_expires_at')
+    .select(
+      'id, order_number, status, payment_status, total_paise, item_count, created_at, paid_at, payment_expires_at',
+    )
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -26,7 +28,10 @@ export async function fetchMyOrders(limit = 30): Promise<MyOrderSummary[]> {
  * holding the order's secret receipt token. Returns null when not found or not
  * authorised (indistinguishable by design).
  */
-export async function fetchReceipt(orderId: string, accessToken: string | null): Promise<OrderReceipt | null> {
+export async function fetchReceipt(
+  orderId: string,
+  accessToken: string | null,
+): Promise<OrderReceipt | null> {
   const { data, error } = await getSupabase().rpc('get_order_receipt', {
     p_order_id: orderId,
     p_access_token: accessToken,
@@ -47,8 +52,10 @@ export function subscribeToOrder(
   const client = getSupabase();
   const channel: RealtimeChannel = client
     .channel(`order:${orderId}`)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${orderId}` }, () =>
-      onChange(),
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${orderId}` },
+      () => onChange(),
     )
     .subscribe((status) => {
       if (status === 'SUBSCRIBED') {

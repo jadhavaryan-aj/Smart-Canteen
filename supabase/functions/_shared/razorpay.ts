@@ -143,9 +143,13 @@ export function createRazorpayApi(options: RazorpayClientOptions): RazorpayApi {
 
   return {
     createOrder: (input) => request<RazorpayOrder>('POST', '/orders', input),
-    fetchPayment: (paymentId) => request<RazorpayPayment>('GET', `/payments/${encodeURIComponent(paymentId)}`),
+    fetchPayment: (paymentId) =>
+      request<RazorpayPayment>('GET', `/payments/${encodeURIComponent(paymentId)}`),
     capturePayment: (paymentId, amount, currency) =>
-      request<RazorpayPayment>('POST', `/payments/${encodeURIComponent(paymentId)}/capture`, { amount, currency }),
+      request<RazorpayPayment>('POST', `/payments/${encodeURIComponent(paymentId)}/capture`, {
+        amount,
+        currency,
+      }),
     createRefund: (paymentId, input) =>
       request<RazorpayRefund>('POST', `/payments/${encodeURIComponent(paymentId)}/refund`, {
         amount: input.amount,
@@ -171,7 +175,9 @@ export function sanitizeWebhookPayload(body: unknown): Record<string, unknown> {
     };
   };
   const pick = (entity: Record<string, unknown> | undefined, keys: string[]) =>
-    entity ? Object.fromEntries(keys.filter((key) => key in entity).map((key) => [key, entity[key]])) : undefined;
+    entity
+      ? Object.fromEntries(keys.filter((key) => key in entity).map((key) => [key, entity[key]]))
+      : undefined;
 
   return {
     event: typeof root.event === 'string' ? root.event : null,
@@ -188,7 +194,14 @@ export function sanitizeWebhookPayload(body: unknown): Record<string, unknown> {
       'error_description',
       'error_reason',
     ]),
-    order: pick(root.payload?.order?.entity, ['id', 'amount', 'amount_paid', 'currency', 'status', 'receipt']),
+    order: pick(root.payload?.order?.entity, [
+      'id',
+      'amount',
+      'amount_paid',
+      'currency',
+      'status',
+      'receipt',
+    ]),
     refund: pick(root.payload?.refund?.entity, ['id', 'payment_id', 'amount', 'currency', 'status']),
   };
 }

@@ -46,7 +46,9 @@ export function ReceiptCard({ receipt, timeZone }: { receipt: OrderReceipt; time
       </header>
 
       <div className="border-b border-dashed border-border px-6 py-7 text-center sm:px-8">
-        <p className="text-[0.7rem] font-bold tracking-[0.18em] text-muted-foreground uppercase">Order number</p>
+        <p className="text-[0.7rem] font-bold tracking-[0.18em] text-muted-foreground uppercase">
+          Order number
+        </p>
         <p className="mt-1 font-display leading-none font-medium" aria-label={receipt.orderNumber}>
           <span className="tabular text-xl text-muted-foreground sm:text-2xl">{prefix}</span>
           <span className="tabular text-5xl text-primary sm:text-6xl">{short}</span>
@@ -81,12 +83,16 @@ export function ReceiptCard({ receipt, timeZone }: { receipt: OrderReceipt; time
               <dt className="text-xs text-muted-foreground">Paid</dt>
               <dd className="mt-0.5 font-medium">
                 {formatDateTime(receipt.paidAt, timeZone)}
-                {receipt.payment?.method ? ` · ${METHOD_LABELS[receipt.payment.method] ?? receipt.payment.method}` : ''}
+                {receipt.payment?.method
+                  ? ` · ${METHOD_LABELS[receipt.payment.method] ?? receipt.payment.method}`
+                  : ''}
               </dd>
             </div>
             <div className="col-span-2">
               <dt className="text-xs text-muted-foreground">Payment reference</dt>
-              <dd className="tabular mt-0.5 font-mono text-[0.8rem] break-all">{receipt.payment?.providerPaymentId}</dd>
+              <dd className="tabular mt-0.5 font-mono text-[0.8rem] break-all">
+                {receipt.payment?.providerPaymentId}
+              </dd>
             </div>
           </>
         ) : null}
@@ -124,10 +130,14 @@ export function ReceiptCard({ receipt, timeZone }: { receipt: OrderReceipt; time
                       {line.customizations.map((c) => c.name).join(' · ')}
                     </span>
                   ) : null}
-                  {line.note ? <span className="mt-0.5 block text-xs text-muted-foreground italic">“{line.note}”</span> : null}
+                  {line.note ? (
+                    <span className="mt-0.5 block text-xs text-muted-foreground italic">“{line.note}”</span>
+                  ) : null}
                 </td>
                 <td className="tabular py-3 text-center">{line.quantity}</td>
-                <td className="tabular py-3 text-right text-muted-foreground">{formatPaise(line.unitPricePaise)}</td>
+                <td className="tabular py-3 text-right text-muted-foreground">
+                  {formatPaise(line.unitPricePaise)}
+                </td>
                 <td className="tabular py-3 text-right font-medium">{formatPaise(line.lineTotalPaise)}</td>
               </tr>
             ))}

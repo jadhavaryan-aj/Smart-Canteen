@@ -14,7 +14,11 @@ const clientOptions = { auth: { persistSession: false, autoRefreshToken: false, 
 let serviceClient: SupabaseClient | null = null;
 
 function getServiceClient(): SupabaseClient {
-  serviceClient ??= createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_ROLE_KEY'), clientOptions);
+  serviceClient ??= createClient(
+    requireEnv('SUPABASE_URL'),
+    requireEnv('SUPABASE_SERVICE_ROLE_KEY'),
+    clientOptions,
+  );
   return serviceClient;
 }
 

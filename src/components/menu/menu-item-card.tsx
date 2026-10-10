@@ -68,7 +68,9 @@ export function MenuItemCard({
           <Price paise={item.pricePaise} className="font-display pt-0.5 text-lg font-medium text-primary" />
         </div>
         {item.description ? (
-          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {item.description}
+          </p>
         ) : null}
         <div className="mt-auto flex items-center justify-between gap-3 pt-4">
           <span className="text-xs font-medium text-muted-foreground">

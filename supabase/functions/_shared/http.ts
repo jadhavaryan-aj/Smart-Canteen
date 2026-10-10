@@ -70,13 +70,23 @@ function parseDetails(code: string, details: string | null): unknown {
 /** Converts any thrown value into a safe JSON error response. Internal details are never leaked. */
 export function errorResponse(error: unknown, headers: Record<string, string>): Response {
   if (error instanceof HttpError) {
-    return json({ error: { code: error.code, message: error.message, details: error.details } }, error.status, headers);
+    return json(
+      { error: { code: error.code, message: error.message, details: error.details } },
+      error.status,
+      headers,
+    );
   }
   if (error instanceof RpcError) {
     const status = RPC_STATUS[error.code] ?? (CLIENT_ERROR_CODES.has(error.code) ? 400 : 500);
     if (status === 500) {
-      console.error(JSON.stringify({ level: 'error', event: 'rpc_error', code: error.code, sqlState: error.sqlState }));
-      return json({ error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again.' } }, 500, headers);
+      console.error(
+        JSON.stringify({ level: 'error', event: 'rpc_error', code: error.code, sqlState: error.sqlState }),
+      );
+      return json(
+        { error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again.' } },
+        500,
+        headers,
+      );
     }
     return json(
       {
@@ -91,9 +101,17 @@ export function errorResponse(error: unknown, headers: Record<string, string>): 
     );
   }
   console.error(
-    JSON.stringify({ level: 'error', event: 'unhandled_error', message: error instanceof Error ? error.message : String(error) }),
+    JSON.stringify({
+      level: 'error',
+      event: 'unhandled_error',
+      message: error instanceof Error ? error.message : String(error),
+    }),
   );
-  return json({ error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again.' } }, 500, headers);
+  return json(
+    { error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again.' } },
+    500,
+    headers,
+  );
 }
 
 /** Reads a JSON body with a size limit. */

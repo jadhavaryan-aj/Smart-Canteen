@@ -14,7 +14,9 @@ export function CategoriesSection() {
   return (
     <section aria-labelledby="categories-heading" className="py-16 sm:py-20">
       <Container>
-        <p className="mb-2 text-xs font-bold tracking-[0.16em] text-sage uppercase">Something for every break</p>
+        <p className="mb-2 text-xs font-bold tracking-[0.16em] text-sage uppercase">
+          Something for every break
+        </p>
         <h2 id="categories-heading" className="mb-8 font-display text-3xl font-medium sm:text-4xl">
           Browse by category
         </h2>
@@ -38,7 +40,10 @@ export function CategoriesSection() {
                         <span className="flex size-11 items-center justify-center rounded-xl bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                           <Icon className="size-5" strokeWidth={1.8} aria-hidden="true" />
                         </span>
-                        <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                        <ArrowUpRight
+                          className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                          aria-hidden="true"
+                        />
                       </div>
                       <div>
                         <h3 className="font-display text-xl font-medium">{category.name}</h3>

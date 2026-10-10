@@ -78,7 +78,10 @@ export function PaymentProgress({
         <DialogTitle className="text-2xl">{copy?.title}</DialogTitle>
         <DialogDescription>{copy?.body}</DialogDescription>
         {phase.name === 'paying' && attemptError ? (
-          <p role="alert" className="rounded-xl bg-status-cancelled-soft px-3 py-2 text-sm font-medium text-status-cancelled">
+          <p
+            role="alert"
+            className="rounded-xl bg-status-cancelled-soft px-3 py-2 text-sm font-medium text-status-cancelled"
+          >
             {attemptError}
           </p>
         ) : null}

@@ -12,7 +12,8 @@ import type { Page, Route, WebSocketRoute } from '@playwright/test';
 
 export const SUPABASE_URL = 'http://supabase.e2e.test';
 
-type OrderStatus = 'payment_pending' | 'confirmed' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+type OrderStatus =
+  'payment_pending' | 'confirmed' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
 interface MockItem {
   id: string;
@@ -26,7 +27,14 @@ interface MockItem {
   is_active: boolean;
   is_featured: boolean;
   sort_order: number;
-  options: { id: string; menu_item_id: string; name: string; price_delta_paise: number; is_available: boolean; sort_order: number }[];
+  options: {
+    id: string;
+    menu_item_id: string;
+    name: string;
+    price_delta_paise: number;
+    is_available: boolean;
+    sort_order: number;
+  }[];
 }
 
 interface MockOrder {
@@ -66,12 +74,35 @@ interface MockOrder {
 }
 
 const CATEGORIES = [
-  { id: '5eed0000-0000-4000-a000-000000000001', name: 'Breakfast', slug: 'breakfast', description: 'Served from opening until 11:30.', sort_order: 10, is_active: true },
-  { id: '5eed0000-0000-4000-a000-000000000003', name: 'Snacks', slug: 'snacks', description: 'Quick bites between lectures.', sort_order: 30, is_active: true },
-  { id: '5eed0000-0000-4000-a000-000000000004', name: 'Beverages', slug: 'beverages', description: 'Hot and cold drinks.', sort_order: 40, is_active: true },
+  {
+    id: '5eed0000-0000-4000-a000-000000000001',
+    name: 'Breakfast',
+    slug: 'breakfast',
+    description: 'Served from opening until 11:30.',
+    sort_order: 10,
+    is_active: true,
+  },
+  {
+    id: '5eed0000-0000-4000-a000-000000000003',
+    name: 'Snacks',
+    slug: 'snacks',
+    description: 'Quick bites between lectures.',
+    sort_order: 30,
+    is_active: true,
+  },
+  {
+    id: '5eed0000-0000-4000-a000-000000000004',
+    name: 'Beverages',
+    slug: 'beverages',
+    description: 'Hot and cold drinks.',
+    sort_order: 40,
+    is_active: true,
+  },
 ];
 
-function item(partial: Partial<MockItem> & Pick<MockItem, 'id' | 'category_id' | 'name' | 'price_paise'>): MockItem {
+function item(
+  partial: Partial<MockItem> & Pick<MockItem, 'id' | 'category_id' | 'name' | 'price_paise'>,
+): MockItem {
   return {
     description: '',
     image_url: null,
@@ -95,8 +126,22 @@ function defaultMenu(): MockItem[] {
       price_paise: 7000,
       is_featured: true,
       options: [
-        { id: '5eed0000-0000-4000-8000-000000000001', menu_item_id: '5eed0000-0000-4000-b000-000000000101', name: 'Extra chutney', price_delta_paise: 0, is_available: true, sort_order: 10 },
-        { id: '5eed0000-0000-4000-8000-000000000002', menu_item_id: '5eed0000-0000-4000-b000-000000000101', name: 'Butter roast', price_delta_paise: 1000, is_available: true, sort_order: 20 },
+        {
+          id: '5eed0000-0000-4000-8000-000000000001',
+          menu_item_id: '5eed0000-0000-4000-b000-000000000101',
+          name: 'Extra chutney',
+          price_delta_paise: 0,
+          is_available: true,
+          sort_order: 10,
+        },
+        {
+          id: '5eed0000-0000-4000-8000-000000000002',
+          menu_item_id: '5eed0000-0000-4000-b000-000000000101',
+          name: 'Butter roast',
+          price_delta_paise: 1000,
+          is_available: true,
+          sort_order: 20,
+        },
       ],
     }),
     item({
@@ -138,7 +183,10 @@ function defaultMenu(): MockItem[] {
 }
 
 const DEFAULT_HOURS = Object.fromEntries(
-  ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => [day, { open: '08:00', close: '20:00', closed: false }]),
+  ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => [
+    day,
+    { open: '08:00', close: '20:00', closed: false },
+  ]),
 );
 
 function base64url(value: string): string {
@@ -169,8 +217,16 @@ const uuid = () => {
   return `00000000-0000-4000-9000-${String(idCounter).padStart(12, '0')}`;
 };
 
-export const ADMIN = { email: 'admin@canteen.test', password: 'correct-horse-battery', id: '00000000-0000-4000-9aaa-000000000001' };
-export const UNPRIVILEGED = { email: 'visitor@canteen.test', password: 'just-a-normal-user', id: '00000000-0000-4000-9aaa-000000000002' };
+export const ADMIN = {
+  email: 'admin@canteen.test',
+  password: 'correct-horse-battery',
+  id: '00000000-0000-4000-9aaa-000000000001',
+};
+export const UNPRIVILEGED = {
+  email: 'visitor@canteen.test',
+  password: 'just-a-normal-user',
+  id: '00000000-0000-4000-9aaa-000000000002',
+};
 
 export class MockBackend {
   menu = defaultMenu();
@@ -179,7 +235,10 @@ export class MockBackend {
   orderingOpen = true;
   /** Calls made to server-only functions, for assertions. */
   calls: string[] = [];
-  private sockets: { ws: WebSocketRoute; channels: Map<string, { joinRef: string; bindings: { id: number; table?: string }[] }> }[] = [];
+  private sockets: {
+    ws: WebSocketRoute;
+    channels: Map<string, { joinRef: string; bindings: { id: number; table?: string }[] }>;
+  }[] = [];
   private orderCounter = 41;
 
   async install(page: Page) {
@@ -206,17 +265,27 @@ export class MockBackend {
       max_items_per_order: 30,
       ordering_status: this.orderingOpen
         ? { is_open: true, reason: 'open', message: null, today_hours: DEFAULT_HOURS.mon, next_opening: null }
-        : { is_open: false, reason: 'paused', message: 'Back in 15 minutes', today_hours: DEFAULT_HOURS.mon, next_opening: null },
+        : {
+            is_open: false,
+            reason: 'paused',
+            message: 'Back in 15 minutes',
+            today_hours: DEFAULT_HOURS.mon,
+            next_opening: null,
+          },
     };
   }
 
-  private priceLines(items: { menu_item_id: string; quantity: number; option_ids?: string[] | null; note?: string | null }[]) {
+  private priceLines(
+    items: { menu_item_id: string; quantity: number; option_ids?: string[] | null; note?: string | null }[],
+  ) {
     const lines: Record<string, unknown>[] = [];
     const issues: Record<string, unknown>[] = [];
     items.forEach((line, index) => {
       const found = this.menu.find((candidate) => candidate.id === line.menu_item_id && candidate.is_active);
-      if (!found) return issues.push({ index, menu_item_id: line.menu_item_id, code: 'not_found', name: null });
-      if (!found.is_available) return issues.push({ index, menu_item_id: found.id, code: 'sold_out', name: found.name });
+      if (!found)
+        return issues.push({ index, menu_item_id: line.menu_item_id, code: 'not_found', name: null });
+      if (!found.is_available)
+        return issues.push({ index, menu_item_id: found.id, code: 'sold_out', name: found.name });
       const options = found.options.filter((option) => (line.option_ids ?? []).includes(option.id));
       const unit = found.price_paise + options.reduce((sum, option) => sum + option.price_delta_paise, 0);
       lines.push({
@@ -228,7 +297,11 @@ export class MockBackend {
         unit_price_paise: unit,
         quantity: line.quantity,
         line_total_paise: unit * line.quantity,
-        options: options.map((option) => ({ id: option.id, name: option.name, price_delta_paise: option.price_delta_paise })),
+        options: options.map((option) => ({
+          id: option.id,
+          name: option.name,
+          price_delta_paise: option.price_delta_paise,
+        })),
         note: line.note ?? null,
       });
     });
@@ -263,7 +336,12 @@ export class MockBackend {
         note: line.special_instructions,
       })),
       payment: order.provider_payment_id
-        ? { provider: 'razorpay', provider_payment_id: order.provider_payment_id, method: 'upi', verified_at: order.paid_at }
+        ? {
+            provider: 'razorpay',
+            provider_payment_id: order.provider_payment_id,
+            method: 'upi',
+            verified_at: order.paid_at,
+          }
         : null,
       timeline: order.history.map((entry) => ({ status: entry.status, at: entry.at })),
       canteen: { name: 'Campus Table', pickup_instructions: this.settings().pickup_instructions },
@@ -318,14 +396,21 @@ export class MockBackend {
   }
 
   /** Adds a paid order directly (as if another student just paid) and announces it over Realtime. */
-  addPaidOrder(customerName = 'Kabir', lines = [{ menu_item_id: '5eed0000-0000-4000-b000-000000000401', quantity: 2 }]) {
+  addPaidOrder(
+    customerName = 'Kabir',
+    lines = [{ menu_item_id: '5eed0000-0000-4000-b000-000000000401', quantity: 2 }],
+  ) {
     const order = this.createOrder('11111111-1111-4111-8111-111111111111', customerName, lines);
     this.markPaid(order);
     this.broadcastOrder(order);
     return order;
   }
 
-  private createOrder(userId: string, customerName: string, items: { menu_item_id: string; quantity: number; option_ids?: string[]; note?: string | null }[]) {
+  private createOrder(
+    userId: string,
+    customerName: string,
+    items: { menu_item_id: string; quantity: number; option_ids?: string[]; note?: string | null }[],
+  ) {
     const priced = this.priceLines(items);
     const now = new Date().toISOString();
     this.orderCounter += 1;
@@ -380,20 +465,42 @@ export class MockBackend {
   // ------------------------------------------------------------- realtime
 
   private handleSocket(ws: WebSocketRoute) {
-    const entry = { ws, channels: new Map<string, { joinRef: string; bindings: { id: number; table?: string }[] }>() };
+    const entry = {
+      ws,
+      channels: new Map<string, { joinRef: string; bindings: { id: number; table?: string }[] }>(),
+    };
     this.sockets.push(entry);
     ws.onMessage((raw) => {
-      const message = JSON.parse(String(raw)) as [string | null, string | null, string, string, Record<string, unknown>];
+      const message = JSON.parse(String(raw)) as [
+        string | null,
+        string | null,
+        string,
+        string,
+        Record<string, unknown>,
+      ];
       const [joinRef, ref, topic, event, payload] = message;
       if (event === 'heartbeat') {
         ws.send(JSON.stringify([null, ref, 'phoenix', 'phx_reply', { status: 'ok', response: {} }]));
         return;
       }
       if (event === 'phx_join') {
-        const config = (payload.config ?? {}) as { postgres_changes?: { event: string; schema: string; table?: string; filter?: string }[] };
-        const bindings = (config.postgres_changes ?? []).map((binding, index) => ({ ...binding, id: 1000 + index }));
+        const config = (payload.config ?? {}) as {
+          postgres_changes?: { event: string; schema: string; table?: string; filter?: string }[];
+        };
+        const bindings = (config.postgres_changes ?? []).map((binding, index) => ({
+          ...binding,
+          id: 1000 + index,
+        }));
         entry.channels.set(topic, { joinRef: joinRef ?? '', bindings });
-        ws.send(JSON.stringify([joinRef, ref, topic, 'phx_reply', { status: 'ok', response: { postgres_changes: bindings } }]));
+        ws.send(
+          JSON.stringify([
+            joinRef,
+            ref,
+            topic,
+            'phx_reply',
+            { status: 'ok', response: { postgres_changes: bindings } },
+          ]),
+        );
         return;
       }
       if (event === 'phx_leave') {
@@ -452,7 +559,12 @@ export class MockBackend {
       route.fulfill({
         status,
         contentType: 'application/json',
-        headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-expose-headers': 'content-range', ...headers },
+        headers: {
+          'access-control-allow-origin': '*',
+          'access-control-allow-headers': '*',
+          'access-control-expose-headers': 'content-range',
+          ...headers,
+        },
         body: JSON.stringify(body),
       });
 
@@ -479,31 +591,65 @@ export class MockBackend {
     // ---- Auth
     if (path === '/auth/v1/signup') {
       const id = uuid();
-      return json(session({ sub: id, role: 'authenticated', is_anonymous: true }, { id, email: '', is_anonymous: true }));
+      return json(
+        session(
+          { sub: id, role: 'authenticated', is_anonymous: true },
+          { id, email: '', is_anonymous: true },
+        ),
+      );
     }
     if (path === '/auth/v1/token') {
       if (url.searchParams.get('grant_type') === 'password') {
-        const account = [ADMIN, UNPRIVILEGED].find((candidate) => candidate.email === body.email && candidate.password === body.password);
-        if (!account) return json({ code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials' }, 400);
-        return json(session({ sub: account.id, role: 'authenticated', is_anonymous: false, email: account.email }, { id: account.id, email: account.email, is_anonymous: false }));
+        const account = [ADMIN, UNPRIVILEGED].find(
+          (candidate) => candidate.email === body.email && candidate.password === body.password,
+        );
+        if (!account)
+          return json(
+            { code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials' },
+            400,
+          );
+        return json(
+          session(
+            { sub: account.id, role: 'authenticated', is_anonymous: false, email: account.email },
+            { id: account.id, email: account.email, is_anonymous: false },
+          ),
+        );
       }
       return json({ msg: 'unsupported' }, 400);
     }
     if (path === '/auth/v1/logout') return route.fulfill({ status: 204 });
     if (path === '/auth/v1/user') {
-      return claims ? json({ id: claims.sub, email: claims.email ?? '', is_anonymous: claims.is_anonymous, aud: 'authenticated' }) : json({ msg: 'no' }, 401);
+      return claims
+        ? json({
+            id: claims.sub,
+            email: claims.email ?? '',
+            is_anonymous: claims.is_anonymous,
+            aud: 'authenticated',
+          })
+        : json({ msg: 'no' }, 401);
     }
 
     // ---- Edge Functions
     if (path === '/functions/v1/create-payment-order') {
       if (method === 'GET') {
-        return json(this.paymentsConfigured ? { configured: true, mode: 'test', keyId: 'rzp_test_E2E' } : { configured: false, mode: null, keyId: null });
+        return json(
+          this.paymentsConfigured
+            ? { configured: true, mode: 'test', keyId: 'rzp_test_E2E' }
+            : { configured: false, mode: null, keyId: null },
+        );
       }
       this.calls.push('create-payment-order');
-      if (!this.paymentsConfigured) return json({ error: { code: 'PAYMENTS_NOT_CONFIGURED', message: 'Online payments are not configured yet.' } }, 503);
-      if (!this.orderingOpen) return json({ error: { code: 'ORDERING_CLOSED', message: 'Back in 15 minutes' } }, 409);
+      if (!this.paymentsConfigured)
+        return json(
+          { error: { code: 'PAYMENTS_NOT_CONFIGURED', message: 'Online payments are not configured yet.' } },
+          503,
+        );
+      if (!this.orderingOpen)
+        return json({ error: { code: 'ORDERING_CLOSED', message: 'Back in 15 minutes' } }, 409);
       const userId = String(claims?.sub ?? '');
-      const items = (body.items as { menuItemId: string; quantity: number; optionIds: string[]; note?: string }[]).map((line) => ({
+      const items = (
+        body.items as { menuItemId: string; quantity: number; optionIds: string[]; note?: string }[]
+      ).map((line) => ({
         menu_item_id: line.menuItemId,
         quantity: line.quantity,
         option_ids: line.optionIds,
@@ -522,7 +668,14 @@ export class MockBackend {
           currency: 'INR',
           paymentExpiresAt: order.payment_expires_at,
         },
-        payment: { provider: 'razorpay', keyId: 'rzp_test_E2E', mode: 'test', providerOrderId: order.provider_order_id, amountPaise: order.total_paise, currency: 'INR' },
+        payment: {
+          provider: 'razorpay',
+          keyId: 'rzp_test_E2E',
+          mode: 'test',
+          providerOrderId: order.provider_order_id,
+          amountPaise: order.total_paise,
+          currency: 'INR',
+        },
         accessToken: 'e2e_receipt_token_abcdefghijklmnopqrstuvwxyz0123456789',
         replayed: false,
       });
@@ -530,10 +683,19 @@ export class MockBackend {
     if (path === '/functions/v1/verify-payment') {
       this.calls.push('verify-payment');
       const order = this.orders.find((candidate) => candidate.id === body.orderId);
-      if (!order || order.provider_order_id !== body.razorpayOrderId) return json({ error: { code: 'ORDER_NOT_FOUND', message: 'Order not found.' } }, 404);
+      if (!order || order.provider_order_id !== body.razorpayOrderId)
+        return json({ error: { code: 'ORDER_NOT_FOUND', message: 'Order not found.' } }, 404);
       this.markPaid(order);
       this.broadcastOrder(order);
-      return json({ state: 'confirmed', order: { id: order.id, orderNumber: order.order_number, status: order.status, paymentStatus: order.payment_status } });
+      return json({
+        state: 'confirmed',
+        order: {
+          id: order.id,
+          orderNumber: order.order_number,
+          status: order.status,
+          paymentStatus: order.payment_status,
+        },
+      });
     }
 
     // ---- RPC
@@ -546,7 +708,10 @@ export class MockBackend {
         case 'get_ordering_status':
           return json(this.settings().ordering_status);
         case 'quote_cart':
-          return json({ ...this.priceLines(body.p_items as never), ordering_status: this.settings().ordering_status });
+          return json({
+            ...this.priceLines(body.p_items as never),
+            ordering_status: this.settings().ordering_status,
+          });
         case 'get_order_receipt': {
           const order = this.orders.find((candidate) => candidate.id === body.p_order_id);
           if (!order) return json(null);
@@ -562,7 +727,8 @@ export class MockBackend {
             day: '2026-10-10',
             timezone: 'Asia/Kolkata',
             orders_today: paid.length,
-            awaiting_preparation: paid.filter((order) => ['confirmed', 'accepted'].includes(order.status)).length,
+            awaiting_preparation: paid.filter((order) => ['confirmed', 'accepted'].includes(order.status))
+              .length,
             preparing: paid.filter((order) => order.status === 'preparing').length,
             ready_for_pickup: paid.filter((order) => order.status === 'ready').length,
             completed_today: paid.filter((order) => order.status === 'completed').length,
@@ -575,19 +741,40 @@ export class MockBackend {
           });
         }
         case 'staff_update_order_status': {
-          if (!isAdmin) return json({ code: '42501', message: 'FORBIDDEN', hint: 'Staff access is required.', details: null }, 403);
+          if (!isAdmin)
+            return json(
+              { code: '42501', message: 'FORBIDDEN', hint: 'Staff access is required.', details: null },
+              403,
+            );
           const order = this.orders.find((candidate) => candidate.id === body.p_order_id);
-          if (!order) return json({ code: 'P0001', message: 'ORDER_NOT_FOUND', hint: 'Order not found.', details: null }, 400);
+          if (!order)
+            return json(
+              { code: 'P0001', message: 'ORDER_NOT_FOUND', hint: 'Order not found.', details: null },
+              400,
+            );
           if (body.p_expected_status && order.status !== body.p_expected_status) {
-            return json({ code: 'P0001', message: 'STALE_STATUS', hint: 'Updated elsewhere.', details: order.status }, 400);
+            return json(
+              { code: 'P0001', message: 'STALE_STATUS', hint: 'Updated elsewhere.', details: order.status },
+              400,
+            );
           }
           order.status = body.p_new_status as OrderStatus;
           order.history.push({ status: order.status, at: new Date().toISOString() });
           this.broadcastOrder(order);
-          return json({ result: 'updated', order_id: order.id, order_number: order.order_number, status: order.status, payment_status: order.payment_status, refund: null });
+          return json({
+            result: 'updated',
+            order_id: order.id,
+            order_number: order.order_number,
+            status: order.status,
+            payment_status: order.payment_status,
+            refund: null,
+          });
         }
         default:
-          return json({ code: 'PGRST202', message: `Function ${fn} not mocked`, details: null, hint: null }, 404);
+          return json(
+            { code: 'PGRST202', message: `Function ${fn} not mocked`, details: null, hint: null },
+            404,
+          );
       }
     }
 
@@ -623,7 +810,10 @@ export class MockBackend {
       if (idEq?.startsWith('eq.')) rows = rows.filter((order) => order.id === idEq.slice(3));
       if (url.searchParams.get('or')) rows = []; // "needs attention" query: nothing in the mock
       const mapped = rows.map((order) => this.adminRow(order));
-      if ((request.headers()['accept'] ?? '').includes('vnd.pgrst.object') || (select.includes('order_status_history') && idEq)) {
+      if (
+        (request.headers()['accept'] ?? '').includes('vnd.pgrst.object') ||
+        (select.includes('order_status_history') && idEq)
+      ) {
         return json(mapped[0] ?? null);
       }
       return json(mapped, 200, { 'content-range': `0-${Math.max(0, mapped.length - 1)}/${mapped.length}` });
@@ -633,7 +823,10 @@ export class MockBackend {
   }
 }
 
-function session(claims: Record<string, unknown>, user: { id: string; email: string; is_anonymous: boolean }) {
+function session(
+  claims: Record<string, unknown>,
+  user: { id: string; email: string; is_anonymous: boolean },
+) {
   return {
     access_token: token(claims),
     token_type: 'bearer',

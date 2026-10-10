@@ -44,7 +44,11 @@ const repo = () => new OrdersRepository(rpc(sessions.service()));
 function post(url: string, body: unknown, auth?: string, extraHeaders: Record<string, string> = {}) {
   return new Request(url, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...(auth ? { authorization: auth } : {}), ...extraHeaders },
+    headers: {
+      'content-type': 'application/json',
+      ...(auth ? { authorization: auth } : {}),
+      ...extraHeaders,
+    },
     body: JSON.stringify(body),
   });
 }
@@ -82,8 +86,12 @@ beforeEach(async () => {
 });
 
 async function startCheckout(studentId = randomUUID()) {
-  await superQuery(`insert into auth.users (id, is_anonymous) values ($1, true) on conflict do nothing`, [studentId]);
-  const response = await createOrder(post('https://fn/create-payment-order', cartBody(), `Bearer student:${studentId}`));
+  await superQuery(`insert into auth.users (id, is_anonymous) values ($1, true) on conflict do nothing`, [
+    studentId,
+  ]);
+  const response = await createOrder(
+    post('https://fn/create-payment-order', cartBody(), `Bearer student:${studentId}`),
+  );
   expect(response.status).toBe(200);
   const body = (await response.json()) as {
     state: string;
@@ -132,7 +140,9 @@ describe('create-payment-order', () => {
     expect(response.status).toBe(409);
     const body = await response.json();
     expect(body.error.code).toBe('ITEMS_UNAVAILABLE');
-    expect(body.error.details).toEqual([expect.objectContaining({ menu_item_id: SEED.items.chai, code: 'sold_out' })]);
+    expect(body.error.details).toEqual([
+      expect.objectContaining({ menu_item_id: SEED.items.chai, code: 'sold_out' }),
+    ]);
     expect(razorpay.calls).toEqual([]);
   });
 
@@ -140,14 +150,22 @@ describe('create-payment-order', () => {
     const studentId = await createUser();
     const tampered = cartBody({ totalPaise: 100 });
     expect((await createOrder(post('https://fn', tampered, `Bearer student:${studentId}`))).status).toBe(400);
-    const tamperedLine = cartBody({ items: [{ menuItemId: SEED.items.chai, quantity: 1, optionIds: [], pricePaise: 1 }] });
-    expect((await createOrder(post('https://fn', tamperedLine, `Bearer student:${studentId}`))).status).toBe(400);
+    const tamperedLine = cartBody({
+      items: [{ menuItemId: SEED.items.chai, quantity: 1, optionIds: [], pricePaise: 1 }],
+    });
+    expect((await createOrder(post('https://fn', tamperedLine, `Bearer student:${studentId}`))).status).toBe(
+      400,
+    );
   });
 
   it('rejects invalid quantities before touching the database', async () => {
     const studentId = await createUser();
     const response = await createOrder(
-      post('https://fn', cartBody({ items: [{ menuItemId: SEED.items.chai, quantity: 0, optionIds: [] }] }), `Bearer student:${studentId}`),
+      post(
+        'https://fn',
+        cartBody({ items: [{ menuItemId: SEED.items.chai, quantity: 0, optionIds: [] }] }),
+        `Bearer student:${studentId}`,
+      ),
     );
     expect(response.status).toBe(400);
   });
@@ -177,14 +195,20 @@ describe('create-payment-order', () => {
       razorpay: null,
       allowedOrigins: [],
     });
-    expect(await (await unconfigured(new Request('https://fn'))).json()).toEqual({ configured: false, mode: null, keyId: null });
+    expect(await (await unconfigured(new Request('https://fn'))).json()).toEqual({
+      configured: false,
+      mode: null,
+      keyId: null,
+    });
     const response = await unconfigured(post('https://fn', cartBody(), `Bearer student:${randomUUID()}`));
     expect(response.status).toBe(503);
     expect((await response.json()).error.code).toBe('PAYMENTS_NOT_CONFIGURED');
   });
 
   it('refuses live keys unless explicitly allowed', () => {
-    const live = loadPaymentConfig((name) => ({ RAZORPAY_KEY_ID: 'rzp_live_abc123', RAZORPAY_KEY_SECRET: 's' })[name]);
+    const live = loadPaymentConfig(
+      (name) => ({ RAZORPAY_KEY_ID: 'rzp_live_abc123', RAZORPAY_KEY_SECRET: 's' })[name],
+    );
     expect(live.configured).toBe(false);
     expect(live.problem).toMatch(/ALLOW_LIVE_PAYMENTS/);
   });
@@ -194,7 +218,9 @@ describe('create-payment-order', () => {
       new Request('https://fn', { method: 'OPTIONS', headers: { origin: 'https://canteen.example' } }),
     );
     expect(response.headers.get('access-control-allow-origin')).toBe('https://canteen.example');
-    const evil = await createOrder(new Request('https://fn', { method: 'OPTIONS', headers: { origin: 'https://evil.example' } }));
+    const evil = await createOrder(
+      new Request('https://fn', { method: 'OPTIONS', headers: { origin: 'https://evil.example' } }),
+    );
     expect(evil.headers.get('access-control-allow-origin')).toBeNull();
   });
 });
@@ -216,7 +242,10 @@ describe('verify-payment', () => {
       ),
     );
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ state: 'confirmed', order: { status: 'confirmed', paymentStatus: 'paid' } });
+    expect(await response.json()).toMatchObject({
+      state: 'confirmed',
+      order: { status: 'confirmed', paymentStatus: 'paid' },
+    });
   });
 
   it('rejects a forged signature and leaves the order unpaid', async () => {
@@ -236,13 +265,17 @@ describe('verify-payment', () => {
     );
     expect(response.status).toBe(400);
     expect((await response.json()).error.code).toBe('INVALID_SIGNATURE');
-    const { rows } = await superQuery(`select status, payment_status from public.orders where id = $1`, [checkout.order.id]);
+    const { rows } = await superQuery(`select status, payment_status from public.orders where id = $1`, [
+      checkout.order.id,
+    ]);
     expect(rows[0]).toEqual({ status: 'payment_pending', payment_status: 'pending' });
   });
 
   it('does not trust a validly signed payment that Razorpay reports as not captured', async () => {
     const checkout = await startCheckout();
-    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, { status: 'created' });
+    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, {
+      status: 'created',
+    });
     const response = await verify(
       post(
         'https://fn',
@@ -261,11 +294,18 @@ describe('verify-payment', () => {
 
   it('captures authorised payments before confirming', async () => {
     const checkout = await startCheckout();
-    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, { status: 'authorized' });
+    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, {
+      status: 'authorized',
+    });
     const response = await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${checkout.studentId}`,
       ),
     );
@@ -280,7 +320,12 @@ describe('verify-payment', () => {
     const response = await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${intruder}`,
       ),
     );
@@ -297,7 +342,9 @@ describe('verify-payment', () => {
       razorpaySignature: signature,
     };
     const responses = await Promise.all(
-      Array.from({ length: 3 }, () => verify(post('https://fn', body, `Bearer student:${checkout.studentId}`))),
+      Array.from({ length: 3 }, () =>
+        verify(post('https://fn', body, `Bearer student:${checkout.studentId}`)),
+      ),
     );
     for (const response of responses) expect((await response.json()).state).toBe('confirmed');
     const { rows } = await superQuery<{ count: number }>(
@@ -314,7 +361,12 @@ describe('verify-payment', () => {
     const response = await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${checkout.studentId}`,
       ),
     );
@@ -325,16 +377,25 @@ describe('verify-payment', () => {
 
   it('records failed payments', async () => {
     const checkout = await startCheckout();
-    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, { status: 'failed' });
+    const { payment, signature } = await razorpay.simulateCheckout(checkout.payment.providerOrderId, {
+      status: 'failed',
+    });
     const response = await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${checkout.studentId}`,
       ),
     );
     expect((await response.json()).state).toBe('failed');
-    const { rows } = await superQuery(`select payment_status from public.orders where id = $1`, [checkout.order.id]);
+    const { rows } = await superQuery(`select payment_status from public.orders where id = $1`, [
+      checkout.order.id,
+    ]);
     expect(rows[0]).toEqual({ payment_status: 'failed' });
   });
 });
@@ -376,9 +437,12 @@ describe('razorpay-webhook', () => {
 
   it('rejects deliveries with an invalid signature', async () => {
     const checkout = await startCheckout();
-    const response = await deliver(capturedEvent(checkout.payment.providerOrderId, 'pay_Forged12345678', 17500), {
-      secret: 'wrong-secret',
-    });
+    const response = await deliver(
+      capturedEvent(checkout.payment.providerOrderId, 'pay_Forged12345678', 17500),
+      {
+        secret: 'wrong-secret',
+      },
+    );
     expect(response.status).toBe(401);
     const { rows } = await superQuery(`select status from public.orders where id = $1`, [checkout.order.id]);
     expect(rows[0]).toEqual({ status: 'payment_pending' });
@@ -387,9 +451,14 @@ describe('razorpay-webhook', () => {
   it('confirms the order and stores a minimised payload', async () => {
     const checkout = await startCheckout();
     const eventId = `evt_${randomUUID().replace(/-/g, '')}`;
-    const response = await deliver(capturedEvent(checkout.payment.providerOrderId, 'pay_Webhook1234567', 17500), { eventId });
+    const response = await deliver(
+      capturedEvent(checkout.payment.providerOrderId, 'pay_Webhook1234567', 17500),
+      { eventId },
+    );
     expect(response.status).toBe(200);
-    const order = await superQuery(`select status, payment_status from public.orders where id = $1`, [checkout.order.id]);
+    const order = await superQuery(`select status, payment_status from public.orders where id = $1`, [
+      checkout.order.id,
+    ]);
     expect(order.rows[0]).toEqual({ status: 'confirmed', payment_status: 'paid' });
     const stored = await superQuery<{ payload: { payment: Record<string, unknown> } }>(
       `select payload from public.payment_webhook_events where event_id = $1`,
@@ -414,7 +483,12 @@ describe('razorpay-webhook', () => {
     const response = await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${checkout.studentId}`,
       ),
     );
@@ -439,9 +513,15 @@ describe('razorpay-webhook', () => {
     await deliver(capturedEvent(checkout.payment.providerOrderId, payment.id, 17500));
     await deliver({
       event: 'refund.processed',
-      payload: { refund: { entity: { id: 'rfnd_Dashboard123456', payment_id: payment.id, amount: 17500, status: 'processed' } } },
+      payload: {
+        refund: {
+          entity: { id: 'rfnd_Dashboard123456', payment_id: payment.id, amount: 17500, status: 'processed' },
+        },
+      },
     });
-    const { rows } = await superQuery(`select status, payment_status from public.orders where id = $1`, [checkout.order.id]);
+    const { rows } = await superQuery(`select status, payment_status from public.orders where id = $1`, [
+      checkout.order.id,
+    ]);
     expect(rows[0]).toEqual({ status: 'cancelled', payment_status: 'refunded' });
   });
 });
@@ -454,7 +534,8 @@ describe('update-order-status', () => {
       razorpay: fake,
       authenticate,
       staffRepoFor: (request) => {
-        const userId = /([0-9a-f-]{36})$/.exec(request.headers.get('authorization') ?? '')?.[1] ?? randomUUID();
+        const userId =
+          /([0-9a-f-]{36})$/.exec(request.headers.get('authorization') ?? '')?.[1] ?? randomUUID();
         return new StaffRepository(rpc(sessions.user(userId)));
       },
       allowedOrigins: [],
@@ -467,7 +548,12 @@ describe('update-order-status', () => {
     await verify(
       post(
         'https://fn',
-        { orderId: checkout.order.id, razorpayOrderId: checkout.payment.providerOrderId, razorpayPaymentId: payment.id, razorpaySignature: signature },
+        {
+          orderId: checkout.order.id,
+          razorpayOrderId: checkout.payment.providerOrderId,
+          razorpayPaymentId: payment.id,
+          razorpaySignature: signature,
+        },
         `Bearer student:${checkout.studentId}`,
       ),
     );
@@ -478,7 +564,11 @@ describe('update-order-status', () => {
     const order = await paidOrder();
     const staffId = await createStaff('staff');
     const response = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'preparing', expectedStatus: 'confirmed' }, `Bearer staff:${staffId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'preparing', expectedStatus: 'confirmed' },
+        `Bearer staff:${staffId}`,
+      ),
     );
     expect(response.status).toBe(200);
     expect((await response.json()).order).toMatchObject({ status: 'preparing', changed: true });
@@ -487,11 +577,19 @@ describe('update-order-status', () => {
   it('forbids students from changing order status', async () => {
     const order = await paidOrder();
     const response = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'completed' }, `Bearer staff:${order.studentId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'completed' },
+        `Bearer staff:${order.studentId}`,
+      ),
     );
     expect(response.status).toBe(403);
     const guest = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'completed' }, `Bearer student:${order.studentId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'completed' },
+        `Bearer student:${order.studentId}`,
+      ),
     );
     expect(guest.status).toBe(401);
   });
@@ -500,7 +598,11 @@ describe('update-order-status', () => {
     const order = await paidOrder();
     const staffId = await createStaff('staff');
     const response = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'completed' }, `Bearer staff:${staffId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'completed' },
+        `Bearer staff:${staffId}`,
+      ),
     );
     expect(response.status).toBe(409);
     expect((await response.json()).error.code).toBe('INVALID_TRANSITION');
@@ -510,13 +612,19 @@ describe('update-order-status', () => {
     const order = await paidOrder();
     const adminId = await createStaff('admin');
     const response = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'cancelled', note: 'Out of stock' }, `Bearer staff:${adminId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'cancelled', note: 'Out of stock' },
+        `Bearer staff:${adminId}`,
+      ),
     );
     const body = await response.json();
     expect(body.order.status).toBe('cancelled');
     expect(body.refund).toMatchObject({ state: 'submitted', amountPaise: 17500 });
     expect([...razorpay.refunds.values()][0]).toMatchObject({ payment_id: order.paymentId, amount: 17500 });
-    const { rows } = await superQuery(`select payment_status from public.orders where id = $1`, [order.order.id]);
+    const { rows } = await superQuery(`select payment_status from public.orders where id = $1`, [
+      order.order.id,
+    ]);
     expect(rows[0]).toEqual({ payment_status: 'refund_pending' });
   });
 
@@ -525,12 +633,18 @@ describe('update-order-status', () => {
     const adminId = await createStaff('admin');
     razorpay.failRefunds = true;
     const response = await handlerFor()(
-      post('https://fn', { action: 'set_status', orderId: order.order.id, status: 'cancelled', note: 'Kitchen fire drill' }, `Bearer staff:${adminId}`),
+      post(
+        'https://fn',
+        { action: 'set_status', orderId: order.order.id, status: 'cancelled', note: 'Kitchen fire drill' },
+        `Bearer staff:${adminId}`,
+      ),
     );
     expect((await response.json()).refund).toMatchObject({ state: 'failed' });
 
     razorpay.failRefunds = false;
-    const retry = await handlerFor()(post('https://fn', { action: 'refund', orderId: order.order.id }, `Bearer staff:${adminId}`));
+    const retry = await handlerFor()(
+      post('https://fn', { action: 'refund', orderId: order.order.id }, `Bearer staff:${adminId}`),
+    );
     expect((await retry.json()).refund).toMatchObject({ state: 'submitted' });
   });
 });

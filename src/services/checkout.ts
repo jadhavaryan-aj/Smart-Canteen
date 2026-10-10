@@ -28,7 +28,9 @@ export interface PaymentConfigStatus {
 }
 
 export async function fetchPaymentConfig(): Promise<PaymentConfigStatus> {
-  const { data } = await invokeFunction<PaymentConfigStatus>(getSupabase(), 'create-payment-order', { method: 'GET' });
+  const { data } = await invokeFunction<PaymentConfigStatus>(getSupabase(), 'create-payment-order', {
+    method: 'GET',
+  });
   return data;
 }
 
@@ -100,6 +102,8 @@ export async function verifyPayment(input: {
   razorpayPaymentId: string;
   razorpaySignature: string;
 }): Promise<VerifyPaymentResponse> {
-  const { data } = await invokeFunction<VerifyPaymentResponse>(getSupabase(), 'verify-payment', { body: input });
+  const { data } = await invokeFunction<VerifyPaymentResponse>(getSupabase(), 'verify-payment', {
+    body: input,
+  });
   return data;
 }

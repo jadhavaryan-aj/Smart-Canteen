@@ -9,7 +9,9 @@ export function RouteErrorBoundary() {
   if (!notFound) console.error(error);
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
-      <h1 className="font-display text-4xl font-medium">{notFound ? 'Page not found' : 'Something went wrong'}</h1>
+      <h1 className="font-display text-4xl font-medium">
+        {notFound ? 'Page not found' : 'Something went wrong'}
+      </h1>
       <p className="mt-3 max-w-md text-muted-foreground">
         {notFound
           ? 'The page you were looking for does not exist.'

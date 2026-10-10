@@ -6,7 +6,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'dist-e2e', 'coverage', 'playwright-report', 'test-results', 'node_modules', 'supabase/.temp'],
+    ignores: [
+      'dist',
+      'dist-e2e',
+      'coverage',
+      'playwright-report',
+      'test-results',
+      'node_modules',
+      'supabase/.temp',
+    ],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],

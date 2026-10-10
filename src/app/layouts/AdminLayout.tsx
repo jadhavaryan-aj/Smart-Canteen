@@ -43,7 +43,10 @@ export default function AdminLayout() {
 
   if (session.isPending) {
     return (
-      <div className="flex min-h-dvh items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
+      <div
+        className="flex min-h-dvh items-center justify-center gap-2 text-sm text-muted-foreground"
+        role="status"
+      >
         <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> Checking your access…
       </div>
     );
@@ -52,13 +55,19 @@ export default function AdminLayout() {
   if (session.isError) {
     return (
       <div className="mx-auto max-w-xl p-6 py-20">
-        <ErrorState error={session.error} title="We couldn’t verify your access" onRetry={() => void session.refetch()} />
+        <ErrorState
+          error={session.error}
+          title="We couldn’t verify your access"
+          onRetry={() => void session.refetch()}
+        />
       </div>
     );
   }
 
   if (!session.data) {
-    return <Navigate to={`/admin/login?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
+    return (
+      <Navigate to={`/admin/login?next=${encodeURIComponent(location.pathname + location.search)}`} replace />
+    );
   }
 
   if (!session.data.role) {
@@ -70,8 +79,8 @@ export default function AdminLayout() {
           </span>
           <h1 className="font-display text-2xl font-medium">This account isn’t authorised</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            You are signed in as {session.data.email}, but this account has not been given a staff or administrator
-            role. Ask an administrator to grant access.
+            You are signed in as {session.data.email}, but this account has not been given a staff or
+            administrator role. Ask an administrator to grant access.
           </p>
           <Button
             variant="outline"

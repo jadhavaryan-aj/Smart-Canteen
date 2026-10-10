@@ -170,7 +170,10 @@ export async function fetchOrders(filters: OrderFilters): Promise<{ rows: AdminO
     .order('created_at', { ascending: false })
     .range(filters.page * filters.pageSize, filters.page * filters.pageSize + filters.pageSize - 1);
 
-  const search = filters.search.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  const search = filters.search
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g, '');
   if (search) query = query.ilike('order_number', `%${escapeLike(search)}%`);
   if (filters.status !== 'all') query = query.eq('status', filters.status);
   if (filters.paymentStatus !== 'all') query = query.eq('payment_status', filters.paymentStatus);
@@ -199,7 +202,14 @@ export async function fetchOrderDetail(orderId: string): Promise<AdminOrderDetai
   const row = data as unknown as OrderRow & {
     refunds: (Pick<
       Tables<'refunds'>,
-      'id' | 'provider_refund_id' | 'amount_paise' | 'status' | 'reason' | 'failure_reason' | 'created_at' | 'processed_at'
+      | 'id'
+      | 'provider_refund_id'
+      | 'amount_paise'
+      | 'status'
+      | 'reason'
+      | 'failure_reason'
+      | 'created_at'
+      | 'processed_at'
     > & { initiator: { display_name: string | null } | null })[];
     order_status_history: (Pick<
       Tables<'order_status_history'>,
@@ -294,7 +304,12 @@ export async function updateOrderStatus(input: {
   });
   if (error) throw fromPostgrestError(error);
   const result = data as unknown as { result: string; status: OrderStatus; payment_status: PaymentStatus };
-  return { status: result.status, paymentStatus: result.payment_status, changed: result.result === 'updated', refund: null };
+  return {
+    status: result.status,
+    paymentStatus: result.payment_status,
+    changed: result.result === 'updated',
+    refund: null,
+  };
 }
 
 export async function requestRefund(orderId: string): Promise<StatusUpdateResult['refund']> {

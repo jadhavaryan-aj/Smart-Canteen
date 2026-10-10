@@ -13,15 +13,22 @@ const alertVariants = cva(
         warning: 'border-honey-soft bg-honey-soft/60 text-[#6b4710] [&>svg]:text-honey',
         destructive:
           'border-status-cancelled-soft bg-status-cancelled-soft/60 text-status-cancelled [&>svg]:text-status-cancelled',
-        success: 'border-status-ready-soft bg-status-ready-soft/60 text-status-ready [&>svg]:text-status-ready',
+        success:
+          'border-status-ready-soft bg-status-ready-soft/60 text-status-ready [&>svg]:text-status-ready',
       },
     },
     defaultVariants: { variant: 'default' },
   },
 );
 
-function Alert({ className, variant, ...props }: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
-  return <div data-slot="alert" role="alert" className={cn(alertVariants({ variant }), className)} {...props} />;
+function Alert({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
+  return (
+    <div data-slot="alert" role="alert" className={cn(alertVariants({ variant }), className)} {...props} />
+  );
 }
 
 function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {

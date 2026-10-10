@@ -40,7 +40,9 @@ export function HowItWorks() {
                 className="relative rounded-2xl border border-white/10 bg-white/[0.04] p-6"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-5xl font-light text-sage-soft/70 tabular">0{index + 1}</span>
+                  <span className="font-display text-5xl font-light text-sage-soft/70 tabular">
+                    0{index + 1}
+                  </span>
                   <step.icon className="size-6 text-sage-soft" strokeWidth={1.6} aria-hidden="true" />
                 </div>
                 <h3 className="mt-5 text-lg font-semibold">{step.title}</h3>

@@ -17,7 +17,9 @@ export function ConnectionIndicator() {
   const { connection, lastSyncedAt, refreshAll } = useAdminRealtime();
   const copy = COPY[connection];
   const synced = lastSyncedAt
-    ? new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', second: '2-digit' }).format(lastSyncedAt)
+    ? new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', second: '2-digit' }).format(
+        lastSyncedAt,
+      )
     : 'not yet';
 
   return (
@@ -27,14 +29,19 @@ export function ConnectionIndicator() {
           <span
             role="status"
             aria-live="polite"
-            className={cn('inline-flex h-9 items-center gap-2 rounded-full bg-card px-3 text-xs font-bold shadow-soft', copy.text)}
+            className={cn(
+              'inline-flex h-9 items-center gap-2 rounded-full bg-card px-3 text-xs font-bold shadow-soft',
+              copy.text,
+            )}
           >
             <span className={cn('size-2 rounded-full', copy.dot)} aria-hidden="true" />
             {copy.label}
           </span>
         </TooltipTrigger>
         <TooltipContent>
-          {connection === 'live' ? 'Receiving live order updates.' : 'Live updates paused — refreshing every 30 seconds.'}{' '}
+          {connection === 'live'
+            ? 'Receiving live order updates.'
+            : 'Live updates paused — refreshing every 30 seconds.'}{' '}
           Last synced {synced}.
         </TooltipContent>
       </Tooltip>

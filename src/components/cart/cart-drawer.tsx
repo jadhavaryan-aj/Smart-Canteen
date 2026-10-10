@@ -5,7 +5,14 @@ import { Link } from 'react-router';
 import { EmptyState } from '@/components/common/states';
 import { Price } from '@/components/common/price';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { useCartSync } from '@/hooks/use-cart-sync';
 import { useCart } from '@/lib/cart/cart-store';
 
@@ -47,7 +54,11 @@ export function CartDrawer() {
             <ul className="flex-1 divide-y divide-border overflow-y-auto px-5" aria-label="Cart items">
               <AnimatePresence initial={false}>
                 {lines.map((line) => (
-                  <CartLineRow key={line.lineId} line={line} unavailable={unavailableLineIds.has(line.lineId)} />
+                  <CartLineRow
+                    key={line.lineId}
+                    line={line}
+                    unavailable={unavailableLineIds.has(line.lineId)}
+                  />
                 ))}
               </AnimatePresence>
             </ul>

@@ -26,10 +26,20 @@ import { useStaff } from './staff-context';
 
 function splitNumber(orderNumber: string) {
   const index = orderNumber.lastIndexOf('-');
-  return index > 0 ? { prefix: orderNumber.slice(0, index), short: orderNumber.slice(index + 1) } : { prefix: '', short: orderNumber };
+  return index > 0
+    ? { prefix: orderNumber.slice(0, index), short: orderNumber.slice(index + 1) }
+    : { prefix: '', short: orderNumber };
 }
 
-export function OrderCard({ order, now, compact = false }: { order: AdminOrder; now: number; compact?: boolean }) {
+export function OrderCard({
+  order,
+  now,
+  compact = false,
+}: {
+  order: AdminOrder;
+  now: number;
+  compact?: boolean;
+}) {
   const { isAdmin } = useStaff();
   const { newOrderIds, acknowledge } = useAdminRealtime();
   const mutation = useStatusMutation();
@@ -43,7 +53,12 @@ export function OrderCard({ order, now, compact = false }: { order: AdminOrder; 
 
   const run = (to: OrderStatus) => {
     acknowledge(order.id);
-    mutation.mutate({ orderId: order.id, orderNumber: order.orderNumber, status: to, expectedStatus: order.status });
+    mutation.mutate({
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      status: to,
+      expectedStatus: order.status,
+    });
   };
 
   return (
@@ -64,7 +79,12 @@ export function OrderCard({ order, now, compact = false }: { order: AdminOrder; 
       <header className="flex items-start justify-between gap-3 p-4 pb-2">
         <div className="min-w-0">
           <p className="tabular text-[0.7rem] font-semibold text-muted-foreground">{prefix}</p>
-          <p className={cn('tabular font-display leading-none font-semibold tracking-tight', compact ? 'text-3xl' : 'text-[2.6rem]')}>
+          <p
+            className={cn(
+              'tabular font-display leading-none font-semibold tracking-tight',
+              compact ? 'text-3xl' : 'text-[2.6rem]',
+            )}
+          >
             {short}
           </p>
         </div>
@@ -81,7 +101,9 @@ export function OrderCard({ order, now, compact = false }: { order: AdminOrder; 
 
       <p className="truncate px-4 text-sm font-semibold">
         {order.customerName}
-        {order.studentIdentifier ? <span className="font-normal text-muted-foreground"> · {order.studentIdentifier}</span> : null}
+        {order.studentIdentifier ? (
+          <span className="font-normal text-muted-foreground"> · {order.studentIdentifier}</span>
+        ) : null}
       </p>
 
       {!compact ? (
@@ -95,7 +117,9 @@ export function OrderCard({ order, now, compact = false }: { order: AdminOrder; 
                   {item.name}
                 </p>
                 {item.customizations.length > 0 ? (
-                  <p className="text-sm font-semibold text-honey">+ {item.customizations.map((c) => c.name).join(', ')}</p>
+                  <p className="text-sm font-semibold text-honey">
+                    + {item.customizations.map((c) => c.name).join(', ')}
+                  </p>
                 ) : null}
                 {item.note ? <p className="text-sm text-status-preparing italic">“{item.note}”</p> : null}
               </div>
@@ -118,7 +142,12 @@ export function OrderCard({ order, now, compact = false }: { order: AdminOrder; 
       {!compact ? (
         <footer className="mt-auto grid gap-2 p-3 pt-0">
           {primary ? (
-            <Button size="xl" className="w-full text-base" disabled={mutation.isPending} onClick={() => run(primary.to)}>
+            <Button
+              size="xl"
+              className="w-full text-base"
+              disabled={mutation.isPending}
+              onClick={() => run(primary.to)}
+            >
               {primary.label}
             </Button>
           ) : null}

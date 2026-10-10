@@ -23,7 +23,12 @@ export function OpenStatusPill({ settings, className }: { settings: PublicSettin
         {status.isOpen ? (
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-ready/60 motion-reduce:hidden" />
         ) : null}
-        <span className={cn('relative inline-flex size-2 rounded-full', status.isOpen ? 'bg-status-ready' : 'bg-honey')} />
+        <span
+          className={cn(
+            'relative inline-flex size-2 rounded-full',
+            status.isOpen ? 'bg-status-ready' : 'bg-honey',
+          )}
+        />
       </span>
       {label}
     </span>

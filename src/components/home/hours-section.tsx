@@ -21,7 +21,11 @@ export function HoursSection() {
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">Online orders are accepted during these hours.</p>
           {settings.data ? (
-            <OpeningHoursTable hours={settings.data.openingHours} timeZone={settings.data.timezone} className="mt-5" />
+            <OpeningHoursTable
+              hours={settings.data.openingHours}
+              timeZone={settings.data.timezone}
+              className="mt-5"
+            />
           ) : (
             <div className="mt-5 space-y-3">
               {Array.from({ length: 7 }, (_, index) => (

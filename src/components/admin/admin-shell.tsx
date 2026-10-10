@@ -13,7 +13,14 @@ import { NavLink, useNavigate } from 'react-router';
 
 import { BrandMonogram } from '@/components/layout/brand-mark';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { signOutStaff } from '@/services/admin/auth';
 
@@ -100,7 +107,9 @@ function Brand() {
       <BrandMonogram />
       <div>
         <p className="font-display text-lg leading-none font-medium">Campus Table</p>
-        <p className="mt-1 text-[0.68rem] font-bold tracking-[0.16em] text-muted-foreground uppercase">Kitchen & admin</p>
+        <p className="mt-1 text-[0.68rem] font-bold tracking-[0.16em] text-muted-foreground uppercase">
+          Kitchen & admin
+        </p>
       </div>
     </div>
   );

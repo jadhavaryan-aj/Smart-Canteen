@@ -35,8 +35,8 @@ export function Hero() {
             <span className="text-primary italic">Less waiting.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-            Order and pay online from anywhere on campus, then collect your food from the counter when it’s ready.
-            No queue at the till, no guessing.
+            Order and pay online from anywhere on campus, then collect your food from the counter when it’s
+            ready. No queue at the till, no guessing.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -86,7 +86,9 @@ export function Hero() {
             className="absolute -bottom-6 left-4 w-[15.5rem] rounded-2xl border border-border bg-card/95 p-4 shadow-lift backdrop-blur sm:-left-8"
             aria-hidden="true"
           >
-            <p className="text-[0.68rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">Your order</p>
+            <p className="text-[0.68rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
+              Your order
+            </p>
             <p className="tabular mt-1 font-display text-2xl font-medium">CT-0042</p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-status-ready-soft px-2.5 py-1 text-xs font-semibold text-status-ready">
               <span className="size-1.5 rounded-full bg-status-ready" /> Ready for pickup

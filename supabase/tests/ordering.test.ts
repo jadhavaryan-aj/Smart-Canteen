@@ -7,8 +7,23 @@ import { createHash, randomUUID } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { RpcError } from '../functions/_shared/rpc.ts';
-import { createPaidOrderFixture, createPendingOrderFixture, sampleCart, SAMPLE_CART_TOTAL, serviceRepo } from './helpers/fixtures.ts';
-import { createStaff, createUser, expectDbError, query, rpc, SEED, sessions, superQuery } from './helpers/db.ts';
+import {
+  createPaidOrderFixture,
+  createPendingOrderFixture,
+  sampleCart,
+  SAMPLE_CART_TOTAL,
+  serviceRepo,
+} from './helpers/fixtures.ts';
+import {
+  createStaff,
+  createUser,
+  expectDbError,
+  query,
+  rpc,
+  SEED,
+  sessions,
+  superQuery,
+} from './helpers/db.ts';
 
 interface Quote {
   lines: { menu_item_id: string; unit_price_paise: number; line_total_paise: number; quantity: number }[];
@@ -32,7 +47,11 @@ describe('server-side price calculation', () => {
   it('prices a cart from database values including option surcharges', async () => {
     const result = await quote([
       { menu_item_id: SEED.items.masalaDosa, quantity: 2, option_ids: [SEED.options.butterRoast] },
-      { menu_item_id: SEED.items.biryani, quantity: 1, option_ids: [SEED.options.extraRaita, SEED.options.boiledEgg] },
+      {
+        menu_item_id: SEED.items.biryani,
+        quantity: 1,
+        option_ids: [SEED.options.extraRaita, SEED.options.boiledEgg],
+      },
     ]);
     expect(result.lines.map((line) => [line.unit_price_paise, line.line_total_paise])).toEqual([
       [8000, 16000],
@@ -46,7 +65,14 @@ describe('server-side price calculation', () => {
 
   it('ignores any price, total or discount fields sent by the client', async () => {
     const result = await quote([
-      { menu_item_id: SEED.items.chai, quantity: 2, price_paise: 1, unit_price_paise: 1, total_paise: 1, discount: 100 },
+      {
+        menu_item_id: SEED.items.chai,
+        quantity: 2,
+        price_paise: 1,
+        unit_price_paise: 1,
+        total_paise: 1,
+        discount: 100,
+      },
     ]);
     expect(result.total_paise).toBe(3000);
   });
@@ -63,7 +89,11 @@ describe('server-side price calculation', () => {
       accessTokenHash: null,
     });
     expect(order.total_paise).toBe(SAMPLE_CART_TOTAL);
-    const { rows } = await superQuery<{ unit_price_paise: number; quantity: number; line_total_paise: number }>(
+    const { rows } = await superQuery<{
+      unit_price_paise: number;
+      quantity: number;
+      line_total_paise: number;
+    }>(
       `select unit_price_paise, quantity, line_total_paise from public.order_items where order_id = $1 order by line_number`,
       [order.order_id],
     );
@@ -90,10 +120,19 @@ describe('server-side price calculation', () => {
     await expectDbError(quote({ items: [] }), 'INVALID_CART');
     await expectDbError(quote([{ menu_item_id: 'not-a-uuid', quantity: 1 }]), 'INVALID_CART');
     await expectDbError(
-      quote([{ menu_item_id: SEED.items.chai, quantity: 1, option_ids: [SEED.options.butterRoast, SEED.options.butterRoast] }]),
+      quote([
+        {
+          menu_item_id: SEED.items.chai,
+          quantity: 1,
+          option_ids: [SEED.options.butterRoast, SEED.options.butterRoast],
+        },
+      ]),
       'INVALID_CART',
     );
-    await expectDbError(quote([{ menu_item_id: SEED.items.chai, quantity: 1, note: 'x'.repeat(121) }]), 'INVALID_CART');
+    await expectDbError(
+      quote([{ menu_item_id: SEED.items.chai, quantity: 1, note: 'x'.repeat(121) }]),
+      'INVALID_CART',
+    );
     await expectDbError(
       quote(Array.from({ length: 31 }, () => ({ menu_item_id: SEED.items.chai, quantity: 1 }))),
       'INVALID_CART',
@@ -113,7 +152,10 @@ describe('server-side price calculation', () => {
 });
 
 describe('creating pending orders', () => {
-  const create = (userId: string, overrides: Partial<Parameters<ReturnType<typeof serviceRepo>['createPendingOrder']>[0]> = {}) =>
+  const create = (
+    userId: string,
+    overrides: Partial<Parameters<ReturnType<typeof serviceRepo>['createPendingOrder']>[0]> = {},
+  ) =>
     serviceRepo().createPendingOrder({
       userId,
       idempotencyKey: randomUUID(),
@@ -131,9 +173,10 @@ describe('creating pending orders', () => {
     expect(order.status).toBe('payment_pending');
     expect(order.payment_status).toBe('pending');
     expect(order.order_number).toMatch(/^CT-\d{8}-\d{4,}$/);
-    const history = await superQuery(`select new_status from public.order_status_history where order_id = $1`, [
-      order.order_id,
-    ]);
+    const history = await superQuery(
+      `select new_status from public.order_status_history where order_id = $1`,
+      [order.order_id],
+    );
     expect(history.rows).toEqual([{ new_status: 'payment_pending' }]);
   });
 
@@ -152,25 +195,39 @@ describe('creating pending orders', () => {
 
   it('refuses new orders while ordering is paused, disabled or outside opening hours', async () => {
     const userId = await createUser();
-    await superQuery(`update public.canteen_settings set ordering_paused = true, pause_message = 'Back in 10 minutes'`);
+    await superQuery(
+      `update public.canteen_settings set ordering_paused = true, pause_message = 'Back in 10 minutes'`,
+    );
     const paused = (await create(userId).catch((caught: unknown) => caught)) as RpcError;
     expect(paused.code).toBe('ORDERING_CLOSED');
     expect(paused.hint).toBe('Back in 10 minutes');
 
     await superQuery(`update public.canteen_settings set ordering_paused = false, ordering_enabled = false`);
-    expect(((await create(userId).catch((caught: unknown) => caught)) as RpcError).code).toBe('ORDERING_CLOSED');
+    expect(((await create(userId).catch((caught: unknown) => caught)) as RpcError).code).toBe(
+      'ORDERING_CLOSED',
+    );
   });
 
   it('validates customer details and terms acceptance', async () => {
     const userId = await createUser();
-    await expect(create(userId, { customerName: 'A' })).rejects.toMatchObject({ code: 'INVALID_CUSTOMER_NAME' });
-    await expect(create(userId, { customerName: '<script>' })).rejects.toMatchObject({ code: 'INVALID_CUSTOMER_NAME' });
-    await expect(create(userId, { termsAccepted: false })).rejects.toMatchObject({ code: 'TERMS_NOT_ACCEPTED' });
+    await expect(create(userId, { customerName: 'A' })).rejects.toMatchObject({
+      code: 'INVALID_CUSTOMER_NAME',
+    });
+    await expect(create(userId, { customerName: '<script>' })).rejects.toMatchObject({
+      code: 'INVALID_CUSTOMER_NAME',
+    });
+    await expect(create(userId, { termsAccepted: false })).rejects.toMatchObject({
+      code: 'TERMS_NOT_ACCEPTED',
+    });
 
     await superQuery(`update public.canteen_settings set student_id_mode = 'required'`);
     await expect(create(userId)).rejects.toMatchObject({ code: 'STUDENT_ID_REQUIRED' });
-    await expect(create(userId, { studentIdentifier: 'DROP TABLE;' })).rejects.toMatchObject({ code: 'INVALID_STUDENT_ID' });
-    await expect(create(userId, { studentIdentifier: 'CS-2024/117' })).resolves.toMatchObject({ status: 'payment_pending' });
+    await expect(create(userId, { studentIdentifier: 'DROP TABLE;' })).rejects.toMatchObject({
+      code: 'INVALID_STUDENT_ID',
+    });
+    await expect(create(userId, { studentIdentifier: 'CS-2024/117' })).resolves.toMatchObject({
+      status: 'payment_pending',
+    });
   });
 
   it('enforces the per-order item limit', async () => {
@@ -197,7 +254,9 @@ describe('duplicate checkout submissions', () => {
     const second = await serviceRepo().createPendingOrder(input);
     expect(second.order_id).toBe(first.order_id);
     expect(second.replayed).toBe(true);
-    const { rows } = await superQuery(`select count(*)::int as count from public.orders where user_id = $1`, [userId]);
+    const { rows } = await superQuery(`select count(*)::int as count from public.orders where user_id = $1`, [
+      userId,
+    ]);
     expect(rows[0]).toEqual({ count: 1 });
   });
 
@@ -212,19 +271,33 @@ describe('duplicate checkout submissions', () => {
       termsAccepted: true,
       accessTokenHash: null,
     };
-    const results = await Promise.all(Array.from({ length: 6 }, () => serviceRepo().createPendingOrder(input)));
+    const results = await Promise.all(
+      Array.from({ length: 6 }, () => serviceRepo().createPendingOrder(input)),
+    );
     expect(new Set(results.map((result) => result.order_id)).size).toBe(1);
-    const { rows } = await superQuery(`select count(*)::int as count from public.orders where user_id = $1`, [userId]);
+    const { rows } = await superQuery(`select count(*)::int as count from public.orders where user_id = $1`, [
+      userId,
+    ]);
     expect(rows[0]).toEqual({ count: 1 });
   });
 
   it('rejects reusing an idempotency key for a different cart', async () => {
     const userId = await createUser();
     const key = randomUUID();
-    const base = { userId, idempotencyKey: key, customerName: 'Mira', studentIdentifier: null, termsAccepted: true, accessTokenHash: null };
+    const base = {
+      userId,
+      idempotencyKey: key,
+      customerName: 'Mira',
+      studentIdentifier: null,
+      termsAccepted: true,
+      accessTokenHash: null,
+    };
     await serviceRepo().createPendingOrder({ ...base, items: sampleCart });
     await expect(
-      serviceRepo().createPendingOrder({ ...base, items: [{ menuItemId: SEED.items.idli, quantity: 1, optionIds: [] }] }),
+      serviceRepo().createPendingOrder({
+        ...base,
+        items: [{ menuItemId: SEED.items.idli, quantity: 1, optionIds: [] }],
+      }),
     ).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
   });
 });
@@ -270,9 +343,10 @@ describe('resuming payment for a pending order', () => {
 
   it('refuses expired orders', async () => {
     const { order, userId } = await createPendingOrderFixture();
-    await superQuery(`update public.orders set payment_expires_at = now() - interval '1 minute' where id = $1`, [
-      order.order_id,
-    ]);
+    await superQuery(
+      `update public.orders set payment_expires_at = now() - interval '1 minute' where id = $1`,
+      [order.order_id],
+    );
     await expect(serviceRepo().prepareOrderPayment(order.order_id, userId)).rejects.toMatchObject({
       code: 'ORDER_EXPIRED',
     });
@@ -346,7 +420,9 @@ describe('receipt access authorisation', () => {
     const other = await orderWithToken();
     expect(await receipt(sessions.anon(), { p_access_token: `${token}x` })).toBeNull();
     expect(await receipt(sessions.anon(), { p_access_token: 'short' })).toBeNull();
-    expect(await receipt(sessions.anon(), { p_access_token: token, p_order_id: other.order.order_id })).toBeNull();
+    expect(
+      await receipt(sessions.anon(), { p_access_token: token, p_order_id: other.order.order_id }),
+    ).toBeNull();
   });
 
   it('lets staff open any receipt', async () => {
@@ -360,7 +436,9 @@ describe('receipt access authorisation', () => {
 
   it('includes the verified payment reference only once paid', async () => {
     const pending = await createPendingOrderFixture();
-    expect(await receipt(sessions.student(pending.userId), { p_order_id: pending.order.order_id })).toMatchObject({
+    expect(
+      await receipt(sessions.student(pending.userId), { p_order_id: pending.order.order_id }),
+    ).toMatchObject({
       payment: null,
     });
     const paid = await createPaidOrderFixture();
@@ -376,11 +454,11 @@ describe('opening hours', () => {
   it('computes open/closed state in the canteen time zone', async () => {
     await superQuery(`update public.canteen_settings set enforce_opening_hours = true`);
     const statusAt = async (iso: string) =>
-      (await query<{ s: { is_open: boolean; reason: string; next_opening: { day: string; time: string } | null } }>(
-        sessions.anon(),
-        `select public.get_ordering_status($1::timestamptz) as s`,
-        [iso],
-      )).rows[0]?.s;
+      (
+        await query<{
+          s: { is_open: boolean; reason: string; next_opening: { day: string; time: string } | null };
+        }>(sessions.anon(), `select public.get_ordering_status($1::timestamptz) as s`, [iso])
+      ).rows[0]?.s;
 
     // Monday 2026-10-12, 10:00 IST → open (default hours 08:00–20:00)
     expect(await statusAt('2026-10-12T04:30:00Z')).toMatchObject({ is_open: true, reason: 'open' });

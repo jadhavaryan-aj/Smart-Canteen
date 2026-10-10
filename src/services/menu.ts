@@ -9,11 +9,7 @@ export async function fetchMenu(): Promise<MenuData> {
   const client = getSupabase();
   const [categories, items] = await Promise.all([
     client.from('categories').select('*').order('sort_order').order('name'),
-    client
-      .from('menu_items')
-      .select('*, options:menu_item_options(*)')
-      .order('sort_order')
-      .order('name'),
+    client.from('menu_items').select('*, options:menu_item_options(*)').order('sort_order').order('name'),
   ]);
   if (categories.error) throw fromPostgrestError(categories.error);
   if (items.error) throw fromPostgrestError(items.error);

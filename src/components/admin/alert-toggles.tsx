@@ -36,7 +36,9 @@ export function AlertToggles() {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          {desktopEnabled ? 'Browser notifications on (when this tab is in the background)' : 'Browser notifications off'}
+          {desktopEnabled
+            ? 'Browser notifications on (when this tab is in the background)'
+            : 'Browser notifications off'}
         </TooltipContent>
       </Tooltip>
     </div>

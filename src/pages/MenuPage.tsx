@@ -86,7 +86,10 @@ export default function MenuPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center">
               <div className="flex items-center gap-3 md:contents">
                 <div className="relative flex-1 md:w-80 md:flex-none">
-                  <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <Input
                     type="search"
                     value={query}
@@ -107,7 +110,10 @@ export default function MenuPage() {
                   ) : null}
                 </div>
                 <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold md:order-last md:ml-auto">
-                  <Switch checked={vegOnly} onCheckedChange={(checked) => update({ veg: checked ? '1' : null })} />
+                  <Switch
+                    checked={vegOnly}
+                    onCheckedChange={(checked) => update({ veg: checked ? '1' : null })}
+                  />
                   <Leaf className="size-4 text-veg" aria-hidden="true" /> Veg only
                 </label>
               </div>
@@ -123,7 +129,9 @@ export default function MenuPage() {
                   <CategoryChip
                     key={category.id}
                     active={activeCategory?.id === category.id}
-                    onClick={() => update({ category: activeCategory?.id === category.id ? null : category.slug })}
+                    onClick={() =>
+                      update({ category: activeCategory?.id === category.id ? null : category.slug })
+                    }
                   >
                     {category.name}
                   </CategoryChip>
@@ -136,7 +144,11 @@ export default function MenuPage() {
             {menu.isPending ? (
               <MenuGridSkeleton />
             ) : menu.isError ? (
-              <ErrorState error={menu.error} title="We couldn’t load the menu" onRetry={() => void menu.refetch()} />
+              <ErrorState
+                error={menu.error}
+                title="We couldn’t load the menu"
+                onRetry={() => void menu.refetch()}
+              />
             ) : filtered.length === 0 ? (
               <EmptyState
                 icon={SearchX}
@@ -148,7 +160,10 @@ export default function MenuPage() {
                 }
                 action={
                   filtersActive ? (
-                    <Button variant="outline" onClick={() => setParams(new URLSearchParams(), { replace: true })}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setParams(new URLSearchParams(), { replace: true })}
+                    >
                       Clear filters
                     </Button>
                   ) : undefined
@@ -163,20 +178,36 @@ export default function MenuPage() {
                 </p>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.map((item, index) => (
-                    <MenuItemCard key={item.id} item={item} categoryName={categoryName(item)} index={index} priority={index < 3} />
+                    <MenuItemCard
+                      key={item.id}
+                      item={item}
+                      categoryName={categoryName(item)}
+                      index={index}
+                      priority={index < 3}
+                    />
                   ))}
                 </div>
               </>
             ) : (
               <div className="space-y-14">
                 {grouped.map(({ category, items }, groupIndex) => (
-                  <section key={category.id} aria-labelledby={`cat-${category.slug}`} id={category.slug} className="scroll-mt-40">
+                  <section
+                    key={category.id}
+                    aria-labelledby={`cat-${category.slug}`}
+                    id={category.slug}
+                    className="scroll-mt-40"
+                  >
                     <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-border pb-3">
-                      <h2 id={`cat-${category.slug}`} className="font-display text-2xl font-medium sm:text-3xl">
+                      <h2
+                        id={`cat-${category.slug}`}
+                        className="font-display text-2xl font-medium sm:text-3xl"
+                      >
                         {category.name}
                       </h2>
                       {category.description ? (
-                        <p className="hidden text-sm text-muted-foreground sm:block">{category.description}</p>
+                        <p className="hidden text-sm text-muted-foreground sm:block">
+                          {category.description}
+                        </p>
                       ) : null}
                     </div>
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

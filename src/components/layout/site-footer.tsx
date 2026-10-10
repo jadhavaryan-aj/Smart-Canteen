@@ -11,18 +11,25 @@ import { Container } from './container';
 function HoursSummary() {
   const settings = useSettings();
   const hours = settings.data?.openingHours;
-  if (!hours) return <p className="text-sm text-muted-foreground">Opening hours appear here once connected.</p>;
+  if (!hours)
+    return <p className="text-sm text-muted-foreground">Opening hours appear here once connected.</p>;
   const weekday = hours.mon;
   const saturday = hours.sat;
   const sunday = hours.sun;
   return (
     <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
       <dt className="text-muted-foreground">Mon – Fri</dt>
-      <dd className="tabular">{weekday.closed ? 'Closed' : `${formatClock(weekday.open)} – ${formatClock(weekday.close)}`}</dd>
+      <dd className="tabular">
+        {weekday.closed ? 'Closed' : `${formatClock(weekday.open)} – ${formatClock(weekday.close)}`}
+      </dd>
       <dt className="text-muted-foreground">Saturday</dt>
-      <dd className="tabular">{saturday.closed ? 'Closed' : `${formatClock(saturday.open)} – ${formatClock(saturday.close)}`}</dd>
+      <dd className="tabular">
+        {saturday.closed ? 'Closed' : `${formatClock(saturday.open)} – ${formatClock(saturday.close)}`}
+      </dd>
       <dt className="text-muted-foreground">Sunday</dt>
-      <dd className="tabular">{sunday.closed ? 'Closed' : `${formatClock(sunday.open)} – ${formatClock(sunday.close)}`}</dd>
+      <dd className="tabular">
+        {sunday.closed ? 'Closed' : `${formatClock(sunday.open)} – ${formatClock(sunday.close)}`}
+      </dd>
     </dl>
   );
 }
@@ -31,7 +38,8 @@ export function SiteFooter() {
   const settings = useSettings();
   const weekdaysDiffer = settings.data
     ? DAY_KEYS.slice(0, 5).some(
-        (day) => JSON.stringify(settings.data.openingHours[day]) !== JSON.stringify(settings.data.openingHours.mon),
+        (day) =>
+          JSON.stringify(settings.data.openingHours[day]) !== JSON.stringify(settings.data.openingHours.mon),
       )
     : false;
 

@@ -4,7 +4,14 @@ import { Link, NavLink } from 'react-router';
 
 import { CartButton } from '@/components/cart/cart-button';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { useSettings } from '@/hooks/use-settings';
 import { brand } from '@/config/brand';
 import { cn } from '@/lib/utils';

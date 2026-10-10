@@ -1,4 +1,14 @@
-import { ArrowLeft, Copy, FileDown, Hourglass, LoaderCircle, Printer, ReceiptText, RefreshCw, Wifi } from 'lucide-react';
+import {
+  ArrowLeft,
+  Copy,
+  FileDown,
+  Hourglass,
+  LoaderCircle,
+  Printer,
+  ReceiptText,
+  RefreshCw,
+  Wifi,
+} from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation, useParams } from 'react-router';
 import { toast } from 'sonner';
@@ -94,7 +104,11 @@ export default function OrderReceiptPage() {
   if (receipt.isError) {
     return (
       <Container className="max-w-2xl py-14">
-        <ErrorState error={receipt.error} title="We couldn’t load this order" onRetry={() => void receipt.refetch()} />
+        <ErrorState
+          error={receipt.error}
+          title="We couldn’t load this order"
+          onRetry={() => void receipt.refetch()}
+        />
       </Container>
     );
   }
@@ -121,7 +135,8 @@ export default function OrderReceiptPage() {
   const awaitingConfirmation =
     data.status === 'payment_pending' &&
     !expired &&
-    (fromCheckout === 'pending_confirmation' || (fromCheckout === 'confirmed' && data.paymentStatus === 'pending'));
+    (fromCheckout === 'pending_confirmation' ||
+      (fromCheckout === 'confirmed' && data.paymentStatus === 'pending'));
 
   const copyLink = async () => {
     try {
@@ -166,9 +181,9 @@ export default function OrderReceiptPage() {
               <LoaderCircle className="animate-spin" />
               <AlertTitle>Confirming your payment…</AlertTitle>
               <AlertDescription>
-                Razorpay reported your payment and we are verifying it with the bank. This usually takes a few seconds —
-                this page updates automatically. If money left your account but the order is not confirmed, it will be
-                refunded automatically by Razorpay or the canteen.
+                Razorpay reported your payment and we are verifying it with the bank. This usually takes a few
+                seconds — this page updates automatically. If money left your account but the order is not
+                confirmed, it will be refunded automatically by Razorpay or the canteen.
               </AlertDescription>
             </Alert>
           ) : expired ? (
@@ -176,15 +191,17 @@ export default function OrderReceiptPage() {
               <Hourglass />
               <AlertTitle>This order was not paid</AlertTitle>
               <AlertDescription>
-                The payment window closed at {formatDateTime(data.paymentExpiresAt, timeZone)}. Nothing was charged.
-                Please place a new order from the menu.
+                The payment window closed at {formatDateTime(data.paymentExpiresAt, timeZone)}. Nothing was
+                charged. Please place a new order from the menu.
               </AlertDescription>
             </Alert>
           ) : (
             <Alert variant="warning">
               <Hourglass />
               <AlertTitle>
-                {data.paymentStatus === 'failed' ? 'Your last payment attempt failed' : 'Payment not completed'}
+                {data.paymentStatus === 'failed'
+                  ? 'Your last payment attempt failed'
+                  : 'Payment not completed'}
               </AlertTitle>
               <AlertDescription>
                 <p>
@@ -195,7 +212,11 @@ export default function OrderReceiptPage() {
                   <Button
                     size="sm"
                     className="mt-3"
-                    disabled={flow.phase.name !== 'idle' && flow.phase.name !== 'dismissed' && flow.phase.name !== 'error'}
+                    disabled={
+                      flow.phase.name !== 'idle' &&
+                      flow.phase.name !== 'dismissed' &&
+                      flow.phase.name !== 'error'
+                    }
                     onClick={() => void flow.resumeCheckout(data.orderId, data.customerName)}
                   >
                     <RefreshCw /> Complete payment
@@ -224,7 +245,9 @@ export default function OrderReceiptPage() {
           </AlertDescription>
         </Alert>
       ) : (
-        <p className="no-print mb-6 text-center text-sm text-muted-foreground">{ORDER_STATUS_META[data.status].description}</p>
+        <p className="no-print mb-6 text-center text-sm text-muted-foreground">
+          {ORDER_STATUS_META[data.status].description}
+        </p>
       )}
 
       <ReceiptCard receipt={data} timeZone={timeZone} />
@@ -247,7 +270,11 @@ export default function OrderReceiptPage() {
         “Save PDF” opens the print dialog — choose “Save as PDF” as the destination.
       </p>
 
-      <PaymentProgress phase={flow.phase} attemptError={flow.attemptError} onConfirmTotal={flow.resolveTotalConfirmation} />
+      <PaymentProgress
+        phase={flow.phase}
+        attemptError={flow.attemptError}
+        onConfirmTotal={flow.resolveTotalConfirmation}
+      />
     </Container>
   );
 }

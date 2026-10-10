@@ -7,6 +7,7 @@ export function nextOpeningText(status: OrderingStatus, timeZone: string): strin
   if (!next) return null;
   const today = todayInZone(timeZone);
   const tomorrow = todayInZone(timeZone, new Date(Date.now() + 86_400_000));
-  const when = next.date === today ? 'today' : next.date === tomorrow ? 'tomorrow' : `on ${DAY_LABELS[next.day]}`;
+  const when =
+    next.date === today ? 'today' : next.date === tomorrow ? 'tomorrow' : `on ${DAY_LABELS[next.day]}`;
   return `Opens ${when} at ${formatClock(next.time)}.`;
 }

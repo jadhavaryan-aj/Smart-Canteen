@@ -6,7 +6,14 @@ import { VegIndicator } from '@/components/common/veg-indicator';
 import { QuantityStepper } from '@/components/cart/quantity-stepper';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { MAX_NOTE_LENGTH, MAX_QUANTITY_PER_LINE } from '@/lib/cart/cart';
@@ -45,7 +52,11 @@ export function CustomizeDialog({ item, open, onOpenChange, onAdded }: Customize
         imageUrl: item.imageUrl,
         isVegetarian: item.isVegetarian,
         basePricePaise: item.pricePaise,
-        options: chosen.map((option) => ({ id: option.id, name: option.name, priceDeltaPaise: option.priceDeltaPaise })),
+        options: chosen.map((option) => ({
+          id: option.id,
+          name: option.name,
+          priceDeltaPaise: option.priceDeltaPaise,
+        })),
         note,
       },
     });
@@ -111,7 +122,8 @@ export function CustomizeDialog({ item, open, onOpenChange, onAdded }: Customize
 
           <div className="grid gap-2">
             <Label htmlFor={`note-${item.id}`}>
-              Special instructions <span className="text-xs font-medium text-muted-foreground">(optional)</span>
+              Special instructions{' '}
+              <span className="text-xs font-medium text-muted-foreground">(optional)</span>
             </Label>
             <Textarea
               id={`note-${item.id}`}

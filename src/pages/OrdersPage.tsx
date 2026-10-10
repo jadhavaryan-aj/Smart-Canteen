@@ -44,11 +44,15 @@ function OrderRow({ order, timeZone, now }: { order: MyOrderSummary; timeZone?: 
             )}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            {formatDateTime(order.createdAt, timeZone)} · {order.itemCount} item{order.itemCount === 1 ? '' : 's'}
+            {formatDateTime(order.createdAt, timeZone)} · {order.itemCount} item
+            {order.itemCount === 1 ? '' : 's'}
           </p>
         </div>
         <Price paise={order.totalPaise} className="font-display text-lg font-medium" />
-        <ChevronRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        <ChevronRight
+          className="size-5 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
       </Link>
     </li>
   );
@@ -61,7 +65,8 @@ export default function OrdersPage() {
     queryKey: ['my-orders'],
     queryFn: () => fetchMyOrders(),
     enabled: supabaseConfig.isConfigured,
-    refetchInterval: (query) => ((query.state.data ?? []).some((order) => ACTIVE.has(order.status)) ? 20_000 : false),
+    refetchInterval: (query) =>
+      (query.state.data ?? []).some((order) => ACTIVE.has(order.status)) ? 20_000 : false,
   });
   const timeZone = settings.data?.timezone;
   const now = useNow(30_000);
@@ -86,7 +91,11 @@ export default function OrdersPage() {
             ))}
           </div>
         ) : orders.isError ? (
-          <ErrorState error={orders.error} title="We couldn’t load your orders" onRetry={() => void orders.refetch()} />
+          <ErrorState
+            error={orders.error}
+            title="We couldn’t load your orders"
+            onRetry={() => void orders.refetch()}
+          />
         ) : orders.data.length === 0 ? (
           <EmptyState
             icon={ReceiptText}
@@ -102,7 +111,10 @@ export default function OrdersPage() {
           <div className="space-y-10">
             {active.length > 0 ? (
               <section aria-labelledby="active-heading">
-                <h2 id="active-heading" className="mb-3 text-sm font-bold tracking-[0.14em] text-sage uppercase">
+                <h2
+                  id="active-heading"
+                  className="mb-3 text-sm font-bold tracking-[0.14em] text-sage uppercase"
+                >
                   In progress
                 </h2>
                 <ul className="space-y-3">
@@ -114,7 +126,10 @@ export default function OrdersPage() {
             ) : null}
             {past.length > 0 ? (
               <section aria-labelledby="past-heading">
-                <h2 id="past-heading" className="mb-3 text-sm font-bold tracking-[0.14em] text-muted-foreground uppercase">
+                <h2
+                  id="past-heading"
+                  className="mb-3 text-sm font-bold tracking-[0.14em] text-muted-foreground uppercase"
+                >
                   Earlier
                 </h2>
                 <ul className="space-y-3">

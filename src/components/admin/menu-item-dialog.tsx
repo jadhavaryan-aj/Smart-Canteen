@@ -7,7 +7,14 @@ import { toast } from 'sonner';
 
 import { FoodImage } from '@/components/common/food-image';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +48,19 @@ function defaults(item: MenuItem | null, categories: Category[]): MenuItemFormVa
   };
 }
 
-function SwitchRow({ id, label, description, checked, onChange }: { id: string; label: string; description: string; checked: boolean; onChange: (value: boolean) => void }) {
+function SwitchRow({
+  id,
+  label,
+  description,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border border-border px-4 py-3">
       <div>
@@ -133,12 +152,23 @@ export function MenuItemDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{item ? `Edit ${item.name}` : 'Add a menu item'}</DialogTitle>
-          <DialogDescription>Prices include taxes. Changes apply to new orders immediately.</DialogDescription>
+          <DialogDescription>
+            Prices include taxes. Changes apply to new orders immediately.
+          </DialogDescription>
         </DialogHeader>
-        <form id="menu-item-form" noValidate onSubmit={form.handleSubmit((values) => save.mutate(values))} className="grid gap-5">
+        <form
+          id="menu-item-form"
+          noValidate
+          onSubmit={form.handleSubmit((values) => save.mutate(values))}
+          className="grid gap-5"
+        >
           <div className="grid gap-5 sm:grid-cols-[10rem_1fr]">
             <div className="grid content-start gap-2">
-              <FoodImage src={imageUrl || null} alt={form.watch('name') || 'Preview'} className="aspect-square w-full rounded-xl" />
+              <FoodImage
+                src={imageUrl || null}
+                alt={form.watch('name') || 'Preview'}
+                className="aspect-square w-full rounded-xl"
+              />
               <input
                 ref={fileInput}
                 type="file"
@@ -147,7 +177,13 @@ export function MenuItemDialog({
                 id="menu-item-image"
                 onChange={(event) => void onFile(event.target.files?.[0])}
               />
-              <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileInput.current?.click()}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => fileInput.current?.click()}
+              >
                 {uploading ? <LoaderCircle className="animate-spin" /> : <ImagePlus />} Upload photo
               </Button>
               <p className="text-[0.7rem] text-muted-foreground">JPEG, PNG or WebP · max 2 MB</p>
@@ -158,7 +194,9 @@ export function MenuItemDialog({
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field id="item-price" label="Price (₹)" error={errors.price?.message}>
-                  {(props) => <Input {...props} inputMode="decimal" placeholder="70" {...form.register('price')} />}
+                  {(props) => (
+                    <Input {...props} inputMode="decimal" placeholder="70" {...form.register('price')} />
+                  )}
                 </Field>
                 <Field id="item-category" label="Category" error={errors.categoryId?.message}>
                   {(props) => (
@@ -173,25 +211,71 @@ export function MenuItemDialog({
                   )}
                 </Field>
               </div>
-              <Field id="item-image-url" label="Image URL" optional error={errors.imageUrl?.message} description="Upload a photo or paste an https:// address.">
+              <Field
+                id="item-image-url"
+                label="Image URL"
+                optional
+                error={errors.imageUrl?.message}
+                description="Upload a photo or paste an https:// address."
+              >
                 {(props) => <Input {...props} placeholder="https://…" {...form.register('imageUrl')} />}
               </Field>
             </div>
           </div>
 
           <Field id="item-description" label="Description" error={errors.description?.message}>
-            {(props) => <Textarea {...props} maxLength={280} className="min-h-20" {...form.register('description')} />}
+            {(props) => (
+              <Textarea {...props} maxLength={280} className="min-h-20" {...form.register('description')} />
+            )}
           </Field>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <SwitchRow id="item-veg" label="Vegetarian" description="Shows the green veg mark" checked={form.watch('isVegetarian')} onChange={(value) => form.setValue('isVegetarian', value, { shouldDirty: true })} />
-            <SwitchRow id="item-available" label="In stock" description="Off = shown as sold out" checked={form.watch('isAvailable')} onChange={(value) => form.setValue('isAvailable', value, { shouldDirty: true })} />
-            <SwitchRow id="item-active" label="Listed on menu" description="Off = hidden (archived)" checked={form.watch('isActive')} onChange={(value) => form.setValue('isActive', value, { shouldDirty: true })} />
-            <SwitchRow id="item-featured" label="Featured" description="Shown on the home page" checked={form.watch('isFeatured')} onChange={(value) => form.setValue('isFeatured', value, { shouldDirty: true })} />
+            <SwitchRow
+              id="item-veg"
+              label="Vegetarian"
+              description="Shows the green veg mark"
+              checked={form.watch('isVegetarian')}
+              onChange={(value) => form.setValue('isVegetarian', value, { shouldDirty: true })}
+            />
+            <SwitchRow
+              id="item-available"
+              label="In stock"
+              description="Off = shown as sold out"
+              checked={form.watch('isAvailable')}
+              onChange={(value) => form.setValue('isAvailable', value, { shouldDirty: true })}
+            />
+            <SwitchRow
+              id="item-active"
+              label="Listed on menu"
+              description="Off = hidden (archived)"
+              checked={form.watch('isActive')}
+              onChange={(value) => form.setValue('isActive', value, { shouldDirty: true })}
+            />
+            <SwitchRow
+              id="item-featured"
+              label="Featured"
+              description="Shown on the home page"
+              checked={form.watch('isFeatured')}
+              onChange={(value) => form.setValue('isFeatured', value, { shouldDirty: true })}
+            />
           </div>
 
-          <Field id="item-sort" label="Sort order" error={errors.sortOrder?.message} description="Lower numbers appear first within the category.">
-            {(props) => <Input {...props} type="number" min={0} max={10000} className="w-32" {...form.register('sortOrder')} />}
+          <Field
+            id="item-sort"
+            label="Sort order"
+            error={errors.sortOrder?.message}
+            description="Lower numbers appear first within the category."
+          >
+            {(props) => (
+              <Input
+                {...props}
+                type="number"
+                min={0}
+                max={10000}
+                className="w-32"
+                {...form.register('sortOrder')}
+              />
+            )}
           </Field>
 
           <fieldset className="grid gap-3">
@@ -201,21 +285,42 @@ export function MenuItemDialog({
             ) : null}
             {options.fields.map((field, index) => (
               <div key={field.id} className="grid grid-cols-[1fr_6.5rem_auto_auto] items-center gap-2">
-                <Input aria-label={`Option ${index + 1} name`} placeholder="e.g. Add cheese" {...form.register(`options.${index}.name`)} aria-invalid={Boolean(errors.options?.[index]?.name)} />
-                <Input aria-label={`Option ${index + 1} extra price in rupees`} inputMode="decimal" placeholder="+₹" {...form.register(`options.${index}.price`)} aria-invalid={Boolean(errors.options?.[index]?.price)} />
+                <Input
+                  aria-label={`Option ${index + 1} name`}
+                  placeholder="e.g. Add cheese"
+                  {...form.register(`options.${index}.name`)}
+                  aria-invalid={Boolean(errors.options?.[index]?.name)}
+                />
+                <Input
+                  aria-label={`Option ${index + 1} extra price in rupees`}
+                  inputMode="decimal"
+                  placeholder="+₹"
+                  {...form.register(`options.${index}.price`)}
+                  aria-invalid={Boolean(errors.options?.[index]?.price)}
+                />
                 <Switch
                   aria-label={`Option ${index + 1} available`}
                   checked={form.watch(`options.${index}.isAvailable`)}
-                  onCheckedChange={(value) => form.setValue(`options.${index}.isAvailable`, value, { shouldDirty: true })}
+                  onCheckedChange={(value) =>
+                    form.setValue(`options.${index}.isAvailable`, value, { shouldDirty: true })
+                  }
                 />
-                <Button type="button" variant="ghost" size="icon-sm" aria-label={`Remove option ${index + 1}`} onClick={() => options.remove(index)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={`Remove option ${index + 1}`}
+                  onClick={() => options.remove(index)}
+                >
                   <Trash2 className="size-4" />
                 </Button>
               </div>
             ))}
             {errors.options ? (
               <p role="alert" className="text-xs font-semibold text-destructive">
-                {errors.options.message ?? errors.options.root?.message ?? 'Check the option names and prices.'}
+                {errors.options.message ??
+                  errors.options.root?.message ??
+                  'Check the option names and prices.'}
               </p>
             ) : null}
             <Button
@@ -235,7 +340,8 @@ export function MenuItemDialog({
             Cancel
           </Button>
           <Button type="submit" form="menu-item-form" disabled={save.isPending || uploading}>
-            {save.isPending ? <LoaderCircle className="animate-spin" /> : null} {item ? 'Save changes' : 'Add item'}
+            {save.isPending ? <LoaderCircle className="animate-spin" /> : null}{' '}
+            {item ? 'Save changes' : 'Add item'}
           </Button>
         </DialogFooter>
       </DialogContent>

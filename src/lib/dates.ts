@@ -12,14 +12,19 @@ export function formatDateTime(iso: string | null | undefined, timeZone = DEFAUL
 
 export function formatTime(iso: string | null | undefined, timeZone = DEFAULT_TIMEZONE): string {
   if (!iso) return '—';
-  return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', timeZone }).format(new Date(iso));
+  return new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', timeZone }).format(
+    new Date(iso),
+  );
 }
 
 export function formatDate(iso: string | null | undefined, timeZone = DEFAULT_TIMEZONE): string {
   if (!iso) return '—';
-  return new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone }).format(
-    new Date(iso),
-  );
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone,
+  }).format(new Date(iso));
 }
 
 /** "08:00" → "8:00 AM" (opening hours are stored as local HH:MM). */
@@ -42,7 +47,12 @@ export function formatElapsed(iso: string, now = Date.now()): string {
 
 /** Today's date (YYYY-MM-DD) in a time zone. */
 export function todayInZone(timeZone = DEFAULT_TIMEZONE, now = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
 }
 
 export const DAY_LABELS: Record<string, string> = {

@@ -35,7 +35,10 @@ export const resumeOrderSchema = z
   })
   .strict();
 
-export const paymentOrderRequestSchema = z.discriminatedUnion('action', [createOrderSchema, resumeOrderSchema]);
+export const paymentOrderRequestSchema = z.discriminatedUnion('action', [
+  createOrderSchema,
+  resumeOrderSchema,
+]);
 
 export const verifyPaymentSchema = z
   .object({

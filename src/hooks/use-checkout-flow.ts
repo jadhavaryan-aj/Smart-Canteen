@@ -5,9 +5,18 @@ import { useNavigate } from 'react-router';
 import { toRequestLines, type CartLine } from '@/lib/cart/cart';
 import { cartStore } from '@/lib/cart/cart-store';
 import { AppError, messageFor } from '@/lib/errors';
-import { idempotencyKeyFor, rememberCheckoutOrder, resetCheckoutSession } from '@/lib/payments/checkout-session';
+import {
+  idempotencyKeyFor,
+  rememberCheckoutOrder,
+  resetCheckoutSession,
+} from '@/lib/payments/checkout-session';
 import { openRazorpayCheckout } from '@/lib/payments/razorpay-checkout';
-import { createPaymentOrder, resumePayment, verifyPayment, type PaymentOrderResponse } from '@/services/checkout';
+import {
+  createPaymentOrder,
+  resumePayment,
+  verifyPayment,
+  type PaymentOrderResponse,
+} from '@/services/checkout';
 import { saveReceiptToken } from '@/services/receipt-links';
 
 import { menuQueryKey } from './use-menu';
@@ -23,7 +32,12 @@ export type CheckoutPhase =
   | { name: 'error'; code: string; message: string; details?: unknown };
 
 /** Errors after which the current pending order can no longer be paid: start a fresh one next time. */
-const ROTATE_KEY_CODES = new Set(['ORDER_EXPIRED', 'MENU_CHANGED', 'IDEMPOTENCY_CONFLICT', 'ITEMS_UNAVAILABLE']);
+const ROTATE_KEY_CODES = new Set([
+  'ORDER_EXPIRED',
+  'MENU_CHANGED',
+  'IDEMPOTENCY_CONFLICT',
+  'ITEMS_UNAVAILABLE',
+]);
 
 export function useCheckoutFlow(canteenName: string) {
   const navigate = useNavigate();
@@ -87,7 +101,11 @@ export function useCheckoutFlow(canteenName: string) {
           razorpaySignature: outcome.response.razorpay_signature,
         });
         if (verified.state === 'failed') {
-          setPhase({ name: 'error', code: 'PAYMENT_FAILED', message: verified.message ?? 'The payment did not go through.' });
+          setPhase({
+            name: 'error',
+            code: 'PAYMENT_FAILED',
+            message: verified.message ?? 'The payment did not go through.',
+          });
           return;
         }
         if (verified.state === 'confirmed') {
@@ -95,14 +113,18 @@ export function useCheckoutFlow(canteenName: string) {
           resetCheckoutSession();
         }
         // Pending confirmations are settled by the webhook; the receipt page keeps checking.
-        navigate(`/orders/${response.order.id}`, { state: { fromCheckout: true, verification: verified.state } });
+        navigate(`/orders/${response.order.id}`, {
+          state: { fromCheckout: true, verification: verified.state },
+        });
       } catch (error) {
         if (error instanceof AppError && ['INVALID_SIGNATURE', 'PAYMENT_MISMATCH'].includes(error.code)) {
           setPhase({ name: 'error', code: error.code, message: messageFor(error) });
           return;
         }
         // We could not reach our server, but Razorpay reported success: let the receipt page confirm.
-        navigate(`/orders/${response.order.id}`, { state: { fromCheckout: true, verification: 'pending_confirmation' } });
+        navigate(`/orders/${response.order.id}`, {
+          state: { fromCheckout: true, verification: 'pending_confirmation' },
+        });
       }
     },
     [canteenName, navigate],
@@ -112,7 +134,8 @@ export function useCheckoutFlow(canteenName: string) {
     (error: unknown) => {
       const code = error instanceof AppError ? error.code : 'INTERNAL_ERROR';
       if (ROTATE_KEY_CODES.has(code)) resetCheckoutSession();
-      if (code === 'ITEMS_UNAVAILABLE' || code === 'MENU_CHANGED') void queryClient.invalidateQueries({ queryKey: menuQueryKey });
+      if (code === 'ITEMS_UNAVAILABLE' || code === 'MENU_CHANGED')
+        void queryClient.invalidateQueries({ queryKey: menuQueryKey });
       if (code === 'ORDERING_CLOSED') void queryClient.invalidateQueries({ queryKey: settingsQueryKey });
       setPhase({
         name: 'error',

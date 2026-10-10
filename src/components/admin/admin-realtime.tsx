@@ -1,6 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { toast } from 'sonner';
 
 import { queueQueryKey, useAdminQueue } from '@/hooks/admin/use-admin-queue';
@@ -43,7 +52,10 @@ export function AdminRealtimeProvider({ children }: { children: ReactNode }) {
   const [newOrderIds, setNewOrderIds] = useState<Set<string>>(() => new Set());
   const [soundEnabled, setSoundState] = useState(() => readPreference('sound', false));
   const [desktopEnabled, setDesktopState] = useState(
-    () => readPreference('desktop-notifications', false) && typeof Notification !== 'undefined' && Notification.permission === 'granted',
+    () =>
+      readPreference('desktop-notifications', false) &&
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'granted',
   );
   const known = useRef<Set<string> | null>(null);
   const prefs = useRef({ soundEnabled, desktopEnabled });
@@ -78,7 +90,11 @@ export function AdminRealtimeProvider({ children }: { children: ReactNode }) {
           : orders.map((order) => order.orderNumber).join(', ');
       toast(title, { description: body, duration: 8_000 });
       if (prefs.current.soundEnabled) playChime();
-      if (prefs.current.desktopEnabled && document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+      if (
+        prefs.current.desktopEnabled &&
+        document.visibilityState === 'hidden' &&
+        Notification.permission === 'granted'
+      ) {
         try {
           new Notification(title, { body, tag: 'campus-table-new-order', icon: '/favicon.svg' });
         } catch {
@@ -188,7 +204,8 @@ export function AdminRealtimeProvider({ children }: { children: ReactNode }) {
         toast.error('This browser does not support notifications.');
         return;
       }
-      const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+      const permission =
+        Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
       if (permission !== 'granted') {
         toast.error('Notifications are blocked. Allow them in your browser settings to use this.');
         return;
@@ -210,7 +227,17 @@ export function AdminRealtimeProvider({ children }: { children: ReactNode }) {
       setDesktopEnabled,
       refreshAll,
     }),
-    [connection, queue.dataUpdatedAt, newOrderIds, acknowledge, soundEnabled, setSoundEnabled, desktopEnabled, setDesktopEnabled, refreshAll],
+    [
+      connection,
+      queue.dataUpdatedAt,
+      newOrderIds,
+      acknowledge,
+      soundEnabled,
+      setSoundEnabled,
+      desktopEnabled,
+      setDesktopEnabled,
+      refreshAll,
+    ],
   );
 
   return <AdminRealtimeContext.Provider value={value}>{children}</AdminRealtimeContext.Provider>;

@@ -18,5 +18,5 @@
     "noUncheckedIndexedAccess": true
   },
   "include": ["supabase/functions/_shared/**/*.ts", "supabase/functions/*/handler.ts"],
-  "exclude": ["supabase/functions/_shared/deno/**"]
+  "exclude": ["supabase/functions/_shared/deno/**", "supabase/functions/**/*.test.ts"]
 }

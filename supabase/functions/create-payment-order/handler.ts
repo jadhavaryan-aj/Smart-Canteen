@@ -66,7 +66,12 @@ export function createPaymentOrderHandler(deps: CreatePaymentOrderDeps) {
 
       const parsed = paymentOrderRequestSchema.safeParse(await readJsonBody(request));
       if (!parsed.success) {
-        throw new HttpError(400, 'INVALID_REQUEST', 'Please check your order details.', formatZodError(parsed.error));
+        throw new HttpError(
+          400,
+          'INVALID_REQUEST',
+          'Please check your order details.',
+          formatZodError(parsed.error),
+        );
       }
 
       const withinUserLimit = await deps.repo.checkRateLimit(
@@ -79,7 +84,11 @@ export function createPaymentOrderHandler(deps: CreatePaymentOrderDeps) {
         ? await deps.repo.checkRateLimit(`create-payment-order:ip:${ip}`, limits.perIp, limits.windowSeconds)
         : true;
       if (!withinUserLimit || !withinIpLimit) {
-        throw new HttpError(429, 'RATE_LIMITED', 'Too many attempts. Please wait a few minutes and try again.');
+        throw new HttpError(
+          429,
+          'RATE_LIMITED',
+          'Too many attempts. Please wait a few minutes and try again.',
+        );
       }
 
       const body = parsed.data;
@@ -117,7 +126,11 @@ export function createPaymentOrderHandler(deps: CreatePaymentOrderDeps) {
 
       if (order.status !== 'payment_pending') {
         // Already paid (or cancelled) — never open a second payment.
-        return json({ state: 'already_processed', order: orderSummary, accessToken, replayed: true }, 200, headers);
+        return json(
+          { state: 'already_processed', order: orderSummary, accessToken, replayed: true },
+          200,
+          headers,
+        );
       }
 
       let providerOrderId = order.provider_order_id;
@@ -136,16 +149,28 @@ export function createPaymentOrderHandler(deps: CreatePaymentOrderDeps) {
             status: error instanceof RazorpayApiError ? error.status : null,
             code: error instanceof RazorpayApiError ? error.code : null,
           });
-          throw new HttpError(502, 'PAYMENT_PROVIDER_ERROR', 'The payment service is unavailable. Please try again.');
+          throw new HttpError(
+            502,
+            'PAYMENT_PROVIDER_ERROR',
+            'The payment service is unavailable. Please try again.',
+          );
         }
         if (created.amount !== order.total_paise || created.currency !== 'INR') {
-          throw new HttpError(502, 'PAYMENT_PROVIDER_ERROR', 'The payment service returned an unexpected amount.');
+          throw new HttpError(
+            502,
+            'PAYMENT_PROVIDER_ERROR',
+            'The payment service returned an unexpected amount.',
+          );
         }
         const attached = await deps.repo.attachProviderOrder(order.order_id, created.id, order.total_paise);
         providerOrderId = attached.provider_order_id;
       }
 
-      logInfo('payment_order_ready', { orderId: order.order_id, replayed: order.replayed, action: body.action });
+      logInfo('payment_order_ready', {
+        orderId: order.order_id,
+        replayed: order.replayed,
+        action: body.action,
+      });
 
       return json(
         {

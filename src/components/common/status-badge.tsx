@@ -1,6 +1,19 @@
-import { CircleCheckBig, Clock3, CookingPot, HandPlatter, Hourglass, Ban, type LucideIcon } from 'lucide-react';
+import {
+  CircleCheckBig,
+  Clock3,
+  CookingPot,
+  HandPlatter,
+  Hourglass,
+  Ban,
+  type LucideIcon,
+} from 'lucide-react';
 
-import { ADMIN_STATUS_LABEL, ORDER_STATUS_META, PAYMENT_STATUS_LABEL, TONE_CLASSES } from '@/lib/order-status';
+import {
+  ADMIN_STATUS_LABEL,
+  ORDER_STATUS_META,
+  PAYMENT_STATUS_LABEL,
+  TONE_CLASSES,
+} from '@/lib/order-status';
 import { cn } from '@/lib/utils';
 import type { OrderStatus, PaymentStatus } from '@/types/domain';
 

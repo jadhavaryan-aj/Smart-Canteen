@@ -4,7 +4,11 @@ export class AppError extends Error {
   readonly details: unknown;
   readonly status: number | null;
 
-  constructor(code: string, message: string, options: { details?: unknown; status?: number | null; cause?: unknown } = {}) {
+  constructor(
+    code: string,
+    message: string,
+    options: { details?: unknown; status?: number | null; cause?: unknown } = {},
+  ) {
     super(message, { cause: options.cause });
     this.name = 'AppError';
     this.code = code;
@@ -31,8 +35,10 @@ export const FRIENDLY_MESSAGES: Record<string, string> = {
 };
 
 export function messageFor(error: unknown): string {
-  if (error instanceof AppError) return error.message || FRIENDLY_MESSAGES[error.code] || FRIENDLY_MESSAGES.INTERNAL_ERROR!;
-  if (error instanceof TypeError && /fetch|network/i.test(error.message)) return FRIENDLY_MESSAGES.NETWORK_ERROR!;
+  if (error instanceof AppError)
+    return error.message || FRIENDLY_MESSAGES[error.code] || FRIENDLY_MESSAGES.INTERNAL_ERROR!;
+  if (error instanceof TypeError && /fetch|network/i.test(error.message))
+    return FRIENDLY_MESSAGES.NETWORK_ERROR!;
   return FRIENDLY_MESSAGES.INTERNAL_ERROR!;
 }
 

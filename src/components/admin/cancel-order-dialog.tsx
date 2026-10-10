@@ -2,7 +2,14 @@ import { useState } from 'react';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useStatusMutation } from '@/hooks/admin/use-status-mutation';
@@ -14,7 +21,13 @@ export function CancelOrderDialog({
   open,
   onOpenChange,
 }: {
-  order: { id: string; orderNumber: string; status: OrderStatus; paymentStatus: PaymentStatus; totalPaise: number };
+  order: {
+    id: string;
+    orderNumber: string;
+    status: OrderStatus;
+    paymentStatus: PaymentStatus;
+    totalPaise: number;
+  };
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -28,7 +41,9 @@ export function CancelOrderDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Cancel order {order.orderNumber}?</DialogTitle>
-          <DialogDescription>The student will see the order as cancelled. This cannot be undone.</DialogDescription>
+          <DialogDescription>
+            The student will see the order as cancelled. This cannot be undone.
+          </DialogDescription>
         </DialogHeader>
         {paid ? (
           <Alert variant="warning">

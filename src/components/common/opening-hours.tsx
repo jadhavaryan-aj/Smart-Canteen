@@ -7,7 +7,15 @@ function todayKey(timeZone: string): string {
   return DAY_KEYS[(date.getUTCDay() + 6) % 7] ?? 'mon';
 }
 
-export function OpeningHoursTable({ hours, timeZone, className }: { hours: OpeningHours; timeZone: string; className?: string }) {
+export function OpeningHoursTable({
+  hours,
+  timeZone,
+  className,
+}: {
+  hours: OpeningHours;
+  timeZone: string;
+  className?: string;
+}) {
   const today = todayKey(timeZone);
   return (
     <dl className={cn('divide-y divide-border', className)}>
@@ -17,7 +25,10 @@ export function OpeningHoursTable({ hours, timeZone, className }: { hours: Openi
         return (
           <div
             key={day}
-            className={cn('flex items-center justify-between py-2.5 text-sm', isToday && 'font-semibold text-primary')}
+            className={cn(
+              'flex items-center justify-between py-2.5 text-sm',
+              isToday && 'font-semibold text-primary',
+            )}
           >
             <dt className="flex items-center gap-2">
               {DAY_LABELS[day]}

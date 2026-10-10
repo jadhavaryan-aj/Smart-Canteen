@@ -109,7 +109,9 @@ export function rpc(session: Session): PgRpcClient {
   return new PgRpcClient(session);
 }
 
-export async function createUser(options: { anonymous?: boolean; email?: string; displayName?: string } = {}) {
+export async function createUser(
+  options: { anonymous?: boolean; email?: string; displayName?: string } = {},
+) {
   const id = randomUUID();
   await superQuery(
     `insert into auth.users (id, email, is_anonymous, raw_user_meta_data) values ($1, $2, $3, $4)`,
@@ -130,7 +132,10 @@ export async function createStaff(role: 'admin' | 'staff', displayName = `Test $
 }
 
 /** Expects a promise to reject with a given RPC / Postgres error code or message fragment. */
-export async function expectDbError(promise: Promise<unknown>, expected: string | RegExp): Promise<pg.DatabaseError> {
+export async function expectDbError(
+  promise: Promise<unknown>,
+  expected: string | RegExp,
+): Promise<pg.DatabaseError> {
   try {
     await promise;
   } catch (error) {

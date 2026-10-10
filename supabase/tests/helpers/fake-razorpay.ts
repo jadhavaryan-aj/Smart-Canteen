@@ -34,7 +34,13 @@ export class FakeRazorpay implements RazorpayApi {
 
   async createOrder(input: { amount: number; currency: 'INR'; receipt: string }): Promise<RazorpayOrder> {
     this.guard('createOrder');
-    const order = { id: `order_${shortId()}`, amount: input.amount, currency: input.currency, receipt: input.receipt, status: 'created' };
+    const order = {
+      id: `order_${shortId()}`,
+      amount: input.amount,
+      currency: input.currency,
+      receipt: input.receipt,
+      status: 'created',
+    };
     this.orders.set(order.id, order);
     return order;
   }
@@ -53,13 +59,17 @@ export class FakeRazorpay implements RazorpayApi {
     if (payment.status === 'captured') {
       throw new RazorpayApiError(400, 'BAD_REQUEST_ERROR', 'This payment has already been captured');
     }
-    if (payment.amount !== amount) throw new RazorpayApiError(400, 'BAD_REQUEST_ERROR', 'Capture amount mismatch');
+    if (payment.amount !== amount)
+      throw new RazorpayApiError(400, 'BAD_REQUEST_ERROR', 'Capture amount mismatch');
     payment.status = 'captured';
     payment.captured = true;
     return { ...payment };
   }
 
-  async createRefund(paymentId: string, input: { amount: number; notes: Record<string, string> }): Promise<RazorpayRefund> {
+  async createRefund(
+    paymentId: string,
+    input: { amount: number; notes: Record<string, string> },
+  ): Promise<RazorpayRefund> {
     this.guard('createRefund');
     if (this.failRefunds) throw new RazorpayApiError(400, 'BAD_REQUEST_ERROR', 'Refund not allowed in test');
     const refund: RazorpayRefund = {

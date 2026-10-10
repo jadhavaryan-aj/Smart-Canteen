@@ -7,7 +7,16 @@ import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 import { createPaidOrderFixture, createPendingOrderFixture } from './helpers/fixtures.ts';
-import { createStaff, createUser, expectDbError, query, rpc, SEED, sessions, superQuery } from './helpers/db.ts';
+import {
+  createStaff,
+  createUser,
+  expectDbError,
+  query,
+  rpc,
+  SEED,
+  sessions,
+  superQuery,
+} from './helpers/db.ts';
 
 describe('schema hardening', () => {
   it('enables RLS on every table in the public schema', async () => {
@@ -53,7 +62,12 @@ describe('schema hardening', () => {
       'check_rate_limit',
       'next_order_number',
     ];
-    const { rows } = await superQuery<{ proname: string; anon: boolean; authenticated: boolean; service: boolean }>(
+    const { rows } = await superQuery<{
+      proname: string;
+      anon: boolean;
+      authenticated: boolean;
+      service: boolean;
+    }>(
       `select p.proname,
               has_function_privilege('anon', p.oid, 'execute') as anon,
               has_function_privilege('authenticated', p.oid, 'execute') as authenticated,
@@ -99,10 +113,10 @@ describe('public menu access', () => {
     const categoryId = randomUUID();
     const hiddenItem = randomUUID();
     const archivedItem = randomUUID();
-    await superQuery(`insert into public.categories (id, name, slug, is_active) values ($1, 'Hidden', $2, false)`, [
-      categoryId,
-      `hidden-${categoryId.slice(0, 8)}`,
-    ]);
+    await superQuery(
+      `insert into public.categories (id, name, slug, is_active) values ($1, 'Hidden', $2, false)`,
+      [categoryId, `hidden-${categoryId.slice(0, 8)}`],
+    );
     await superQuery(
       `insert into public.menu_items (id, category_id, name, price_paise) values ($1, $2, 'Secret item', 5000)`,
       [hiddenItem, categoryId],
@@ -150,7 +164,9 @@ describe('public menu access', () => {
       `insert into public.menu_items (id, category_id, name, price_paise) values ($1, $2, 'Lemon Rice', 6500)`,
       [itemId, SEED.categories.breakfast],
     );
-    await query(sessions.user(adminId), `update public.menu_items set price_paise = 7000 where id = $1`, [itemId]);
+    await query(sessions.user(adminId), `update public.menu_items set price_paise = 7000 where id = $1`, [
+      itemId,
+    ]);
     const { rows } = await superQuery<{ action: string; actor_id: string }>(
       `select action, actor_id from public.audit_log where table_name = 'menu_items' and record_id = $1 order by id`,
       [itemId],
@@ -161,9 +177,15 @@ describe('public menu access', () => {
 
   it('only lets admins update canteen settings', async () => {
     const staffId = await createStaff('staff');
-    const result = await query(sessions.user(staffId), `update public.canteen_settings set canteen_name = 'Hacked'`);
+    const result = await query(
+      sessions.user(staffId),
+      `update public.canteen_settings set canteen_name = 'Hacked'`,
+    );
     expect(result.rowCount).toBe(0);
-    await expectDbError(query(sessions.anon(), `update public.canteen_settings set canteen_name = 'Hacked'`), 'permission denied');
+    await expectDbError(
+      query(sessions.anon(), `update public.canteen_settings set canteen_name = 'Hacked'`),
+      'permission denied',
+    );
   });
 });
 
@@ -175,22 +197,40 @@ describe('order ownership (IDOR protection)', () => {
     const orders = await query<{ id: string }>(sessions.student(mine.userId), `select id from public.orders`);
     expect(orders.rows.map((row) => row.id)).toEqual([mine.order.order_id]);
 
-    const items = await query(sessions.student(mine.userId), `select id from public.order_items where order_id = $1`, [
-      theirs.order.order_id,
-    ]);
+    const items = await query(
+      sessions.student(mine.userId),
+      `select id from public.order_items where order_id = $1`,
+      [theirs.order.order_id],
+    );
     expect(items.rows).toEqual([]);
   });
 
   it('denies anonymous visitors any access to orders, payments and customer data', async () => {
     await createPaidOrderFixture();
-    for (const table of ['orders', 'order_items', 'payments', 'refunds', 'order_status_history', 'profiles']) {
-      await expectDbError(query(sessions.anon(), `select * from public.${table} limit 1`), 'permission denied');
+    for (const table of [
+      'orders',
+      'order_items',
+      'payments',
+      'refunds',
+      'order_status_history',
+      'profiles',
+    ]) {
+      await expectDbError(
+        query(sessions.anon(), `select * from public.${table} limit 1`),
+        'permission denied',
+      );
     }
   });
 
   it('hides payment records, refunds and history from students (receipt RPC only)', async () => {
     const paid = await createPaidOrderFixture();
-    for (const table of ['payments', 'refunds', 'order_status_history', 'payment_webhook_events', 'audit_log']) {
+    for (const table of [
+      'payments',
+      'refunds',
+      'order_status_history',
+      'payment_webhook_events',
+      'audit_log',
+    ]) {
       const { rows } = await query(sessions.student(paid.userId), `select * from public.${table}`);
       expect(rows, table).toEqual([]);
     }
@@ -199,7 +239,10 @@ describe('order ownership (IDOR protection)', () => {
   it('never exposes access tokens, counters or rate limits through the API', async () => {
     const studentId = await createUser();
     for (const table of ['order_access_tokens', 'order_number_counters', 'rate_limits']) {
-      await expectDbError(query(sessions.student(studentId), `select * from public.${table}`), 'permission denied');
+      await expectDbError(
+        query(sessions.student(studentId), `select * from public.${table}`),
+        'permission denied',
+      );
     }
   });
 
@@ -219,9 +262,11 @@ describe('payment forgery and privilege escalation', () => {
     const staffId = await createStaff('admin');
     for (const session of [sessions.student(userId), sessions.user(staffId)]) {
       await expectDbError(
-        query(session, `update public.orders set status = 'confirmed', payment_status = 'paid' where id = $1`, [
-          order.order_id,
-        ]),
+        query(
+          session,
+          `update public.orders set status = 'confirmed', payment_status = 'paid' where id = $1`,
+          [order.order_id],
+        ),
         'permission denied',
       );
     }
@@ -230,7 +275,10 @@ describe('payment forgery and privilege escalation', () => {
   it('rejects inserting orders or payments directly', async () => {
     const studentId = await createUser();
     await expectDbError(
-      query(sessions.student(studentId), `insert into public.payments (order_id, provider_order_id, amount_paise) values (gen_random_uuid(), 'order_x', 100)`),
+      query(
+        sessions.student(studentId),
+        `insert into public.payments (order_id, provider_order_id, amount_paise) values (gen_random_uuid(), 'order_x', 100)`,
+      ),
       'permission denied',
     );
   });
@@ -257,7 +305,9 @@ describe('payment forgery and privilege escalation', () => {
       /PAYMENT_NOT_VERIFIED|orders_kitchen_states_require_payment/,
     );
     await expectDbError(
-      superQuery(`update public.orders set total_paise = 100, subtotal_paise = 100 where id = $1`, [order.order_id]),
+      superQuery(`update public.orders set total_paise = 100, subtotal_paise = 100 where id = $1`, [
+        order.order_id,
+      ]),
       'ORDER_IMMUTABLE_FIELD',
     );
   });
@@ -265,17 +315,25 @@ describe('payment forgery and privilege escalation', () => {
   it('prevents users from granting themselves a role', async () => {
     const userId = await createUser({ anonymous: false, email: `${randomUUID()}@example.test` });
     await expectDbError(
-      query(sessions.user(userId), `insert into public.user_roles (user_id, role) values ($1, 'admin')`, [userId]),
+      query(sessions.user(userId), `insert into public.user_roles (user_id, role) values ($1, 'admin')`, [
+        userId,
+      ]),
       'permission denied',
     );
-    const role = await query<{ role: string | null }>(sessions.user(userId), `select public.get_my_staff_role() as role`);
+    const role = await query<{ role: string | null }>(
+      sessions.user(userId),
+      `select public.get_my_staff_role() as role`,
+    );
     expect(role.rows[0]?.role).toBeNull();
   });
 
   it('never treats an anonymous (guest) session as staff, even with a role row', async () => {
     const guestId = await createUser({ anonymous: true });
     await superQuery(`insert into public.user_roles (user_id, role) values ($1, 'admin')`, [guestId]);
-    const { rows } = await query<{ staff: boolean }>(sessions.student(guestId), `select public.has_staff_access() as staff`);
+    const { rows } = await query<{ staff: boolean }>(
+      sessions.student(guestId),
+      `select public.has_staff_access() as staff`,
+    );
     expect(rows[0]?.staff).toBe(false);
   });
 
@@ -288,15 +346,19 @@ describe('payment forgery and privilege escalation', () => {
       [`items/${randomUUID()}.webp`],
     );
     await expectDbError(
-      query(sessions.user(staffId), `insert into storage.objects (bucket_id, name) values ('menu-images', $1)`, [
-        `items/${randomUUID()}.webp`,
-      ]),
+      query(
+        sessions.user(staffId),
+        `insert into storage.objects (bucket_id, name) values ('menu-images', $1)`,
+        [`items/${randomUUID()}.webp`],
+      ),
       'row-level security',
     );
     await expectDbError(
-      query(sessions.user(adminId), `insert into storage.objects (bucket_id, name) values ('menu-images', $1)`, [
-        `items/${randomUUID()}.svg`,
-      ]),
+      query(
+        sessions.user(adminId),
+        `insert into storage.objects (bucket_id, name) values ('menu-images', $1)`,
+        [`items/${randomUUID()}.svg`],
+      ),
       'row-level security',
     );
   });

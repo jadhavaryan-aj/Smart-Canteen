@@ -29,7 +29,9 @@ export function AddToCartControl({ item }: { item: MenuItem }) {
   const plainLine = lines.find((line) => line.lineId === plainLineId);
 
   if (hasOptions) {
-    const inCart = lines.filter((line) => line.menuItemId === item.id).reduce((sum, line) => sum + line.quantity, 0);
+    const inCart = lines
+      .filter((line) => line.menuItemId === item.id)
+      .reduce((sum, line) => sum + line.quantity, 0);
     return (
       <>
         <Button size="sm" variant={inCart > 0 ? 'secondary' : 'default'} onClick={() => setCustomizing(true)}>

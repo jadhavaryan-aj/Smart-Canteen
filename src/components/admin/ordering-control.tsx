@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { messageFor } from '@/lib/errors';
@@ -15,7 +22,11 @@ import { fetchOrderingStatus, setOrderingPaused } from '@/services/admin/setting
 /** Lets counter staff pause new orders during a rush (and resume them). */
 export function OrderingControl() {
   const queryClient = useQueryClient();
-  const status = useQuery({ queryKey: orderingStatusKey, queryFn: fetchOrderingStatus, refetchInterval: 60_000 });
+  const status = useQuery({
+    queryKey: orderingStatusKey,
+    queryFn: fetchOrderingStatus,
+    refetchInterval: 60_000,
+  });
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -43,7 +54,7 @@ export function OrderingControl() {
         size="sm"
         onClick={() => (paused ? mutation.mutate({ paused: false }) : setOpen(true))}
         disabled={!data || mutation.isPending || (!data.isOpen && !paused)}
-        title={data && !data.isOpen && !paused ? data.message ?? 'Ordering is closed' : undefined}
+        title={data && !data.isOpen && !paused ? (data.message ?? 'Ordering is closed') : undefined}
         className={cn(
           'h-9 gap-2',
           data?.isOpen && 'border-status-ready/30 text-status-ready',
@@ -58,7 +69,8 @@ export function OrderingControl() {
           <DialogHeader>
             <DialogTitle>Pause new orders?</DialogTitle>
             <DialogDescription>
-              Students will not be able to start new checkouts until you resume. Orders already paid are unaffected.
+              Students will not be able to start new checkouts until you resume. Orders already paid are
+              unaffected.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
@@ -75,7 +87,10 @@ export function OrderingControl() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Keep taking orders
             </Button>
-            <Button onClick={() => mutation.mutate({ paused: true, note: message })} disabled={mutation.isPending}>
+            <Button
+              onClick={() => mutation.mutate({ paused: true, note: message })}
+              disabled={mutation.isPending}
+            >
               Pause new orders
             </Button>
           </DialogFooter>

@@ -1,7 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence } from 'motion/react';
-import { ArrowLeft, CircleAlert, CreditCard, LoaderCircle, Lock, ShieldCheck, ShoppingBag } from 'lucide-react';
+import {
+  ArrowLeft,
+  CircleAlert,
+  CreditCard,
+  LoaderCircle,
+  Lock,
+  ShieldCheck,
+  ShoppingBag,
+} from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
@@ -69,7 +77,11 @@ export default function CheckoutPage() {
   });
 
   const schema = useMemo(
-    () => checkoutDetailsSchema(settings.data?.studentIdMode ?? 'hidden', settings.data?.studentIdLabel ?? 'Student ID'),
+    () =>
+      checkoutDetailsSchema(
+        settings.data?.studentIdMode ?? 'hidden',
+        settings.data?.studentIdLabel ?? 'Student ID',
+      ),
     [settings.data?.studentIdMode, settings.data?.studentIdLabel],
   );
   const form = useForm<CheckoutDetails>({
@@ -105,7 +117,8 @@ export default function CheckoutPage() {
 
   const status = quote.data?.orderingStatus ?? settings.data?.orderingStatus;
   const orderingOpen = status?.isOpen ?? false;
-  const hasIssues = (quote.data?.issues.length ?? 0) > 0 || lines.some((line) => unavailableLineIds.has(line.lineId));
+  const hasIssues =
+    (quote.data?.issues.length ?? 0) > 0 || lines.some((line) => unavailableLineIds.has(line.lineId));
   const maxItems = settings.data?.maxItemsPerOrder ?? 30;
   const tooMany = totals.itemCount > maxItems;
   const paymentsReady = paymentConfig.data?.configured === true;
@@ -114,7 +127,13 @@ export default function CheckoutPage() {
   const busy = ['creating', 'paying', 'verifying', 'confirm_total'].includes(flow.phase.name);
 
   const canPay =
-    orderingOpen && paymentsReady && !hasIssues && !tooMany && serverTotal !== null && !quote.isFetching && !busy;
+    orderingOpen &&
+    paymentsReady &&
+    !hasIssues &&
+    !tooMany &&
+    serverTotal !== null &&
+    !quote.isFetching &&
+    !busy;
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -142,9 +161,14 @@ export default function CheckoutPage() {
       <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <form id="checkout-form" onSubmit={onSubmit} noValidate className="space-y-8">
           {paymentConfig.data?.mode === 'test' ? <TestModeBanner /> : null}
-          {status ? <OrderingStatusBanner status={status} timeZone={settings.data?.timezone ?? 'Asia/Kolkata'} /> : null}
+          {status ? (
+            <OrderingStatusBanner status={status} timeZone={settings.data?.timezone ?? 'Asia/Kolkata'} />
+          ) : null}
 
-          <section aria-labelledby="review-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+          <section
+            aria-labelledby="review-heading"
+            className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+          >
             <div className="flex items-center justify-between">
               <h2 id="review-heading" className="text-lg font-semibold">
                 Review your order
@@ -156,7 +180,11 @@ export default function CheckoutPage() {
             <ul className="mt-2 divide-y divide-border" aria-label="Items in your order">
               <AnimatePresence initial={false}>
                 {lines.map((line) => (
-                  <CartLineRow key={line.lineId} line={line} unavailable={unavailableLineIds.has(line.lineId)} />
+                  <CartLineRow
+                    key={line.lineId}
+                    line={line}
+                    unavailable={unavailableLineIds.has(line.lineId)}
+                  />
                 ))}
               </AnimatePresence>
             </ul>
@@ -185,7 +213,10 @@ export default function CheckoutPage() {
             ) : null}
           </section>
 
-          <section aria-labelledby="details-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+          <section
+            aria-labelledby="details-heading"
+            className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+          >
             <h2 id="details-heading" className="text-lg font-semibold">
               Your details
             </h2>
@@ -193,9 +224,18 @@ export default function CheckoutPage() {
               We only need a name to call out at the counter. No account, phone number or email required.
             </p>
             <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <Field id="customerName" label="Name for pickup" error={form.formState.errors.customerName?.message}>
+              <Field
+                id="customerName"
+                label="Name for pickup"
+                error={form.formState.errors.customerName?.message}
+              >
                 {(props) => (
-                  <Input {...props} autoComplete="given-name" placeholder="e.g. Priya" {...form.register('customerName')} />
+                  <Input
+                    {...props}
+                    autoComplete="given-name"
+                    placeholder="e.g. Priya"
+                    {...form.register('customerName')}
+                  />
                 )}
               </Field>
               {settings.data && settings.data.studentIdMode !== 'hidden' ? (
@@ -213,7 +253,9 @@ export default function CheckoutPage() {
               <Checkbox
                 id="acceptTerms"
                 checked={form.watch('acceptTerms')}
-                onCheckedChange={(checked) => form.setValue('acceptTerms', checked === true, { shouldValidate: true })}
+                onCheckedChange={(checked) =>
+                  form.setValue('acceptTerms', checked === true, { shouldValidate: true })
+                }
                 aria-invalid={Boolean(form.formState.errors.acceptTerms)}
                 aria-describedby={form.formState.errors.acceptTerms ? 'acceptTerms-error' : undefined}
                 className="mt-0.5"
@@ -221,13 +263,21 @@ export default function CheckoutPage() {
               <div>
                 <label htmlFor="acceptTerms" className="text-sm leading-relaxed">
                   I agree to the{' '}
-                  <Link to="/terms" target="_blank" className="font-semibold text-primary underline-offset-4 hover:underline">
+                  <Link
+                    to="/terms"
+                    target="_blank"
+                    className="font-semibold text-primary underline-offset-4 hover:underline"
+                  >
                     ordering terms
                   </Link>
                   , including collecting my order from the counter.
                 </label>
                 {form.formState.errors.acceptTerms ? (
-                  <p id="acceptTerms-error" role="alert" className="mt-1 text-xs font-semibold text-destructive">
+                  <p
+                    id="acceptTerms-error"
+                    role="alert"
+                    className="mt-1 text-xs font-semibold text-destructive"
+                  >
                     {form.formState.errors.acceptTerms.message}
                   </p>
                 ) : null}
@@ -253,7 +303,11 @@ export default function CheckoutPage() {
                 <AlertTitle>Couldn’t confirm prices</AlertTitle>
                 <AlertDescription>
                   {messageFor(quote.error)}{' '}
-                  <button type="button" className="font-semibold underline" onClick={() => void quote.refetch()}>
+                  <button
+                    type="button"
+                    className="font-semibold underline"
+                    onClick={() => void quote.refetch()}
+                  >
                     Retry
                   </button>
                 </AlertDescription>
@@ -264,7 +318,8 @@ export default function CheckoutPage() {
                   {quote.data.lines.map((line) => (
                     <li key={line.index} className="flex justify-between gap-3">
                       <span className="text-muted-foreground">
-                        <span className="tabular font-semibold text-foreground">{line.quantity} ×</span> {line.name}
+                        <span className="tabular font-semibold text-foreground">{line.quantity} ×</span>{' '}
+                        {line.name}
                       </span>
                       <span className="tabular shrink-0">{formatPaise(line.lineTotalPaise)}</span>
                     </li>
@@ -278,12 +333,13 @@ export default function CheckoutPage() {
                 <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
                   {quote.isFetching ? (
                     <>
-                      <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" /> Re-checking prices…
+                      <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" /> Re-checking
+                      prices…
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="size-3.5 text-status-ready" aria-hidden="true" /> Prices confirmed by the
-                      canteen’s server · taxes included
+                      <ShieldCheck className="size-3.5 text-status-ready" aria-hidden="true" /> Prices
+                      confirmed by the canteen’s server · taxes included
                     </>
                   )}
                 </p>
@@ -306,7 +362,8 @@ export default function CheckoutPage() {
                 <CreditCard />
                 <AlertTitle>Online payments aren’t set up yet</AlertTitle>
                 <AlertDescription>
-                  Orders can’t be placed until the canteen connects its payment account. No payment has been taken.
+                  Orders can’t be placed until the canteen connects its payment account. No payment has been
+                  taken.
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -323,8 +380,8 @@ export default function CheckoutPage() {
                 <CircleAlert />
                 <AlertTitle>Payment not completed</AlertTitle>
                 <AlertDescription>
-                  You closed the payment window, so your order hasn’t been placed and you haven’t been charged. You can
-                  try again.
+                  You closed the payment window, so your order hasn’t been placed and you haven’t been
+                  charged. You can try again.
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -347,7 +404,11 @@ export default function CheckoutPage() {
         </aside>
       </div>
 
-      <PaymentProgress phase={flow.phase} attemptError={flow.attemptError} onConfirmTotal={flow.resolveTotalConfirmation} />
+      <PaymentProgress
+        phase={flow.phase}
+        attemptError={flow.attemptError}
+        onConfirmTotal={flow.resolveTotalConfirmation}
+      />
     </Container>
   );
 }

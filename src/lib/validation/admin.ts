@@ -14,13 +14,20 @@ const rupees = (label: string, min: number, max: number) =>
     .string()
     .trim()
     .refine((value) => parseRupeesToPaise(value) !== null, `${label}: enter an amount like 70 or 70.50.`)
-    .refine((value) => {
-      const paise = parseRupeesToPaise(value);
-      return paise !== null && paise >= min && paise <= max;
-    }, `${label} must be between ₹${min / 100} and ₹${max / 100}.`);
+    .refine(
+      (value) => {
+        const paise = parseRupeesToPaise(value);
+        return paise !== null && paise >= min && paise <= max;
+      },
+      `${label} must be between ₹${min / 100} and ₹${max / 100}.`,
+    );
 
 export const menuItemFormSchema = z.object({
-  name: z.string().trim().min(2, 'Name must be at least 2 characters.').max(80, 'Name must be at most 80 characters.'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be at least 2 characters.')
+    .max(80, 'Name must be at most 80 characters.'),
   description: z.string().trim().max(280, 'Description must be at most 280 characters.'),
   price: rupees('Price', 100, 500_000),
   categoryId: z.string().min(1, 'Choose a category.'),
@@ -28,9 +35,12 @@ export const menuItemFormSchema = z.object({
     .string()
     .trim()
     .max(1024)
-    .refine((value) => value === '' || /^https:\/\/[^\s"'<>]+$/.test(value) || /^\/[A-Za-z0-9._~/-]+$/.test(value), {
-      message: 'Use an https:// image address.',
-    }),
+    .refine(
+      (value) => value === '' || /^https:\/\/[^\s"'<>]+$/.test(value) || /^\/[A-Za-z0-9._~/-]+$/.test(value),
+      {
+        message: 'Use an https:// image address.',
+      },
+    ),
   isVegetarian: z.boolean(),
   isAvailable: z.boolean(),
   isActive: z.boolean(),
@@ -80,7 +90,10 @@ export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use HH:MM.');
 const daySchema = z
   .object({ open: time, close: time, closed: z.boolean() })
-  .refine((day) => day.closed || day.open < day.close, { message: 'Closing time must be after opening time.', path: ['close'] });
+  .refine((day) => day.closed || day.open < day.close, {
+    message: 'Closing time must be after opening time.',
+    path: ['close'],
+  });
 
 export const settingsFormSchema = z.object({
   canteenName: z.string().trim().min(2).max(60),
@@ -90,11 +103,19 @@ export const settingsFormSchema = z.object({
   orderingPaused: z.boolean(),
   pauseMessage: z.string().trim().max(200),
   enforceOpeningHours: z.boolean(),
-  openingHours: z.object(Object.fromEntries(DAY_KEYS.map((day) => [day, daySchema])) as Record<(typeof DAY_KEYS)[number], typeof daySchema>),
+  openingHours: z.object(
+    Object.fromEntries(DAY_KEYS.map((day) => [day, daySchema])) as Record<
+      (typeof DAY_KEYS)[number],
+      typeof daySchema
+    >,
+  ),
   timezone: z.string().trim().min(3).max(64),
   studentIdMode: z.enum(['hidden', 'optional', 'required']),
   studentIdLabel: z.string().trim().min(2).max(40),
-  orderPrefix: z.string().trim().regex(/^[A-Z]{1,6}$/, 'Use 1–6 capital letters.'),
+  orderPrefix: z
+    .string()
+    .trim()
+    .regex(/^[A-Z]{1,6}$/, 'Use 1–6 capital letters.'),
   maxItemsPerOrder: z.coerce.number<string | number>().int().min(1).max(100),
   pendingPaymentWindowMinutes: z.coerce.number<string | number>().int().min(5).max(240),
 });

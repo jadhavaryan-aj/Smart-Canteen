@@ -23,7 +23,10 @@ export function announceRefund(refund: StatusUpdateResult['refund']) {
   if (!('message' in refund)) {
     toast.success(`Refund of ${formatPaise(refund.amountPaise)} submitted to Razorpay`);
   } else if (refund.state === 'not_configured') {
-    toast.warning('Order cancelled — refund needs manual action', { description: refund.message, duration: 12_000 });
+    toast.warning('Order cancelled — refund needs manual action', {
+      description: refund.message,
+      duration: 12_000,
+    });
   } else {
     toast.error('Order cancelled, but the refund failed', {
       description: `${refund.message} Retry it from the order details page.`,

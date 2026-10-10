@@ -45,7 +45,8 @@ export async function saveCategory(input: CategoryInput): Promise<void> {
     ? await client.from('categories').update(values).eq('id', input.id)
     : await client.from('categories').insert(values);
   if (error) {
-    if (error.code === '23505') throw new AppError('DUPLICATE_SLUG', 'Another category already uses this URL name.');
+    if (error.code === '23505')
+      throw new AppError('DUPLICATE_SLUG', 'Another category already uses this URL name.');
     throw fromPostgrestError(error);
   }
 }
@@ -59,7 +60,10 @@ export async function deleteCategory(id: string): Promise<void> {
   const { error } = await getAdminSupabase().from('categories').delete().eq('id', id);
   if (error) {
     if (error.code === '23503') {
-      throw new AppError('CATEGORY_IN_USE', 'Move or delete the items in this category first, or hide it instead.');
+      throw new AppError(
+        'CATEGORY_IN_USE',
+        'Move or delete the items in this category first, or hide it instead.',
+      );
     }
     throw fromPostgrestError(error);
   }
@@ -69,7 +73,12 @@ export async function deleteCategory(id: string): Promise<void> {
 export async function reorderCategories(orderedIds: string[]): Promise<void> {
   const client = getAdminSupabase();
   const results = await Promise.all(
-    orderedIds.map((id, index) => client.from('categories').update({ sort_order: (index + 1) * 10 }).eq('id', id)),
+    orderedIds.map((id, index) =>
+      client
+        .from('categories')
+        .update({ sort_order: (index + 1) * 10 })
+        .eq('id', id),
+    ),
   );
   const failed = results.find((result) => result.error);
   if (failed?.error) throw fromPostgrestError(failed.error);
@@ -132,7 +141,8 @@ export async function saveMenuItem(input: MenuItemInput, existingOptionIds: stri
       ? await client.from('menu_item_options').update(optionValues).eq('id', option.id)
       : await client.from('menu_item_options').insert({ ...optionValues, menu_item_id: itemId });
     if (error) {
-      if (error.code === '23505') throw new AppError('DUPLICATE_OPTION', `Option “${option.name}” is listed twice.`);
+      if (error.code === '23505')
+        throw new AppError('DUPLICATE_OPTION', `Option “${option.name}” is listed twice.`);
       throw fromPostgrestError(error);
     }
   }

@@ -29,7 +29,10 @@ function PageSuspense({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted-foreground" role="status">
+        <div
+          className="flex min-h-[50vh] items-center justify-center text-sm text-muted-foreground"
+          role="status"
+        >
           Loading…
         </div>
       }
@@ -43,7 +46,10 @@ function AdminSuspense({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-dvh items-center justify-center text-sm text-muted-foreground" role="status">
+        <div
+          className="flex min-h-dvh items-center justify-center text-sm text-muted-foreground"
+          role="status"
+        >
           Loading…
         </div>
       }
@@ -61,12 +67,54 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'menu', element: <MenuPage /> },
-      { path: 'checkout', element: <PageSuspense><CheckoutPage /></PageSuspense> },
-      { path: 'orders', element: <PageSuspense><OrdersPage /></PageSuspense> },
-      { path: 'orders/:orderId', element: <PageSuspense><OrderReceiptPage /></PageSuspense> },
-      { path: 'about', element: <PageSuspense><AboutPage /></PageSuspense> },
-      { path: 'terms', element: <PageSuspense><TermsPage /></PageSuspense> },
-      { path: '*', element: <PageSuspense><NotFoundPage /></PageSuspense> },
+      {
+        path: 'checkout',
+        element: (
+          <PageSuspense>
+            <CheckoutPage />
+          </PageSuspense>
+        ),
+      },
+      {
+        path: 'orders',
+        element: (
+          <PageSuspense>
+            <OrdersPage />
+          </PageSuspense>
+        ),
+      },
+      {
+        path: 'orders/:orderId',
+        element: (
+          <PageSuspense>
+            <OrderReceiptPage />
+          </PageSuspense>
+        ),
+      },
+      {
+        path: 'about',
+        element: (
+          <PageSuspense>
+            <AboutPage />
+          </PageSuspense>
+        ),
+      },
+      {
+        path: 'terms',
+        element: (
+          <PageSuspense>
+            <TermsPage />
+          </PageSuspense>
+        ),
+      },
+      {
+        path: '*',
+        element: (
+          <PageSuspense>
+            <NotFoundPage />
+          </PageSuspense>
+        ),
+      },
     ],
   },
   {

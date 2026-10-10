@@ -44,7 +44,11 @@ describe('payment confirmation', () => {
       `select previous_status, new_status, source from public.order_status_history where order_id = $1 order by id`,
       [order.order_id],
     );
-    expect(history.rows.at(-1)).toEqual({ previous_status: 'payment_pending', new_status: 'confirmed', source: 'payment' });
+    expect(history.rows.at(-1)).toEqual({
+      previous_status: 'payment_pending',
+      new_status: 'confirmed',
+      source: 'payment',
+    });
   });
 
   it('is idempotent when the same payment is reported repeatedly (checkout + webhook + retries)', async () => {
@@ -60,7 +64,12 @@ describe('payment confirmation', () => {
         source,
       });
 
-    const results = await Promise.all([confirm('checkout'), confirm('webhook'), confirm('webhook'), confirm('checkout')]);
+    const results = await Promise.all([
+      confirm('checkout'),
+      confirm('webhook'),
+      confirm('webhook'),
+      confirm('checkout'),
+    ]);
     expect(results.filter((result) => result.result === 'confirmed')).toHaveLength(1);
     expect(results.filter((result) => result.result === 'already_confirmed')).toHaveLength(3);
 
@@ -96,7 +105,10 @@ describe('payment confirmation', () => {
       source: 'webhook',
     });
     expect(result.result).toBe('amount_mismatch');
-    expect(await orderRow(order.order_id)).toMatchObject({ status: 'payment_pending', payment_status: 'pending' });
+    expect(await orderRow(order.order_id)).toMatchObject({
+      status: 'payment_pending',
+      payment_status: 'pending',
+    });
   });
 
   it('ignores payments for unknown provider orders', async () => {
@@ -119,7 +131,10 @@ describe('payment confirmation', () => {
       errorCode: 'BAD_REQUEST_ERROR',
       errorDescription: 'Card declined',
     });
-    expect(await orderRow(order.order_id)).toMatchObject({ status: 'payment_pending', payment_status: 'failed' });
+    expect(await orderRow(order.order_id)).toMatchObject({
+      status: 'payment_pending',
+      payment_status: 'failed',
+    });
 
     const retry = await serviceRepo().confirmPayment({
       providerOrderId,
@@ -147,7 +162,11 @@ describe('payment confirmation', () => {
   it('marks payments received after an admin cancelled the order as needing a refund', async () => {
     const { order, providerOrderId } = await createPendingOrderFixture();
     const adminId = await createStaff('admin');
-    await staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled', note: 'Abandoned' });
+    await staffRepo(adminId).updateOrderStatus({
+      orderId: order.order_id,
+      status: 'cancelled',
+      note: 'Abandoned',
+    });
     const result = await serviceRepo().confirmPayment({
       providerOrderId,
       providerPaymentId: fakePaymentId(),
@@ -165,7 +184,9 @@ describe('webhook event deduplication', () => {
   it('processes an event id once and reports duplicates', async () => {
     const eventId = `evt_${randomUUID().replace(/-/g, '')}`;
     const repo = serviceRepo();
-    expect(await repo.beginWebhookEvent(eventId, 'payment.captured', { a: 1 })).toMatchObject({ should_process: true });
+    expect(await repo.beginWebhookEvent(eventId, 'payment.captured', { a: 1 })).toMatchObject({
+      should_process: true,
+    });
     await repo.finishWebhookEvent(eventId, 'processed', 'ok');
     expect(await repo.beginWebhookEvent(eventId, 'payment.captured', { a: 1 })).toMatchObject({
       should_process: false,
@@ -178,7 +199,9 @@ describe('webhook event deduplication', () => {
     const repo = serviceRepo();
     await repo.beginWebhookEvent(eventId, 'payment.captured', {});
     await repo.finishWebhookEvent(eventId, 'failed', 'boom');
-    expect(await repo.beginWebhookEvent(eventId, 'payment.captured', {})).toMatchObject({ should_process: true });
+    expect(await repo.beginWebhookEvent(eventId, 'payment.captured', {})).toMatchObject({
+      should_process: true,
+    });
   });
 });
 
@@ -207,7 +230,9 @@ describe('staff order status transitions', () => {
   ] as const)('rejects the invalid transition %s → %s', async (_from, to) => {
     const { order } = await createPaidOrderFixture();
     const staffId = await createStaff('staff');
-    await expect(staffRepo(staffId).updateOrderStatus({ orderId: order.order_id, status: to })).rejects.toMatchObject({
+    await expect(
+      staffRepo(staffId).updateOrderStatus({ orderId: order.order_id, status: to }),
+    ).rejects.toMatchObject({
       code: 'INVALID_TRANSITION',
     });
   });
@@ -216,11 +241,16 @@ describe('staff order status transitions', () => {
     const { order } = await createPendingOrderFixture();
     const adminId = await createStaff('admin');
     for (const status of ['confirmed', 'accepted', 'preparing'] as const) {
-      await expect(staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status })).rejects.toMatchObject({
+      await expect(
+        staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status }),
+      ).rejects.toMatchObject({
         code: 'INVALID_TRANSITION',
       });
     }
-    expect(await orderRow(order.order_id)).toMatchObject({ status: 'payment_pending', payment_status: 'pending' });
+    expect(await orderRow(order.order_id)).toMatchObject({
+      status: 'payment_pending',
+      payment_status: 'pending',
+    });
   });
 
   it('rejects completed → anything (completed orders are final)', async () => {
@@ -239,9 +269,17 @@ describe('staff order status transitions', () => {
     const { order } = await createPaidOrderFixture();
     const tabletA = staffRepo(await createStaff('staff'));
     const tabletB = staffRepo(await createStaff('staff'));
-    await tabletA.updateOrderStatus({ orderId: order.order_id, status: 'preparing', expectedStatus: 'confirmed' });
+    await tabletA.updateOrderStatus({
+      orderId: order.order_id,
+      status: 'preparing',
+      expectedStatus: 'confirmed',
+    });
     await expect(
-      tabletA.updateOrderStatus({ orderId: order.order_id, status: 'preparing', expectedStatus: 'confirmed' }),
+      tabletA.updateOrderStatus({
+        orderId: order.order_id,
+        status: 'preparing',
+        expectedStatus: 'confirmed',
+      }),
     ).resolves.toMatchObject({ result: 'unchanged' });
     await expect(
       tabletB.updateOrderStatus({ orderId: order.order_id, status: 'accepted', expectedStatus: 'confirmed' }),
@@ -250,13 +288,20 @@ describe('staff order status transitions', () => {
 
   it('denies students and anonymous visitors', async () => {
     const { order, userId } = await createPaidOrderFixture();
-    await expect(staffRepo(userId).updateOrderStatus({ orderId: order.order_id, status: 'preparing' })).rejects.toMatchObject({
+    await expect(
+      staffRepo(userId).updateOrderStatus({ orderId: order.order_id, status: 'preparing' }),
+    ).rejects.toMatchObject({
       code: 'FORBIDDEN',
     });
     await expect(
-      rpc(sessions.anon()).call('staff_update_order_status', { p_order_id: order.order_id, p_new_status: 'preparing' }),
+      rpc(sessions.anon()).call('staff_update_order_status', {
+        p_order_id: order.order_id,
+        p_new_status: 'preparing',
+      }),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
-    await expect(rpc(sessions.student(userId)).call('get_dashboard_stats')).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await expect(rpc(sessions.student(userId)).call('get_dashboard_stats')).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+    });
   });
 
   it('only lets admins cancel, and requires a reason', async () => {
@@ -264,9 +309,15 @@ describe('staff order status transitions', () => {
     const staffId = await createStaff('staff');
     const adminId = await createStaff('admin');
     await expect(
-      staffRepo(staffId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled', note: 'Out of stock' }),
+      staffRepo(staffId).updateOrderStatus({
+        orderId: order.order_id,
+        status: 'cancelled',
+        note: 'Out of stock',
+      }),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
-    await expect(staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled' })).rejects.toMatchObject({
+    await expect(
+      staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled' }),
+    ).rejects.toMatchObject({
       code: 'REASON_REQUIRED',
     });
   });
@@ -289,8 +340,14 @@ describe('staff order status transitions', () => {
   it('lets counter staff toggle availability and pause ordering, but nothing else', async () => {
     const staffId = await createStaff('staff');
     const item = '5eed0000-0000-4000-b000-000000000102';
-    await rpc(sessions.user(staffId)).call('set_menu_item_availability', { p_item_id: item, p_is_available: false });
-    await rpc(sessions.user(staffId)).call('set_menu_item_availability', { p_item_id: item, p_is_available: true });
+    await rpc(sessions.user(staffId)).call('set_menu_item_availability', {
+      p_item_id: item,
+      p_is_available: false,
+    });
+    await rpc(sessions.user(staffId)).call('set_menu_item_availability', {
+      p_item_id: item,
+      p_is_available: true,
+    });
     const status = await rpc(sessions.user(staffId)).call<{ reason: string }>('set_ordering_paused', {
       p_paused: true,
       p_message: 'Lunch rush',
@@ -300,7 +357,10 @@ describe('staff order status transitions', () => {
 
     const studentId = await createUser();
     await expect(
-      rpc(sessions.student(studentId)).call('set_menu_item_availability', { p_item_id: item, p_is_available: false }),
+      rpc(sessions.student(studentId)).call('set_menu_item_availability', {
+        p_item_id: item,
+        p_is_available: false,
+      }),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 });
@@ -309,7 +369,11 @@ describe('refunds', () => {
   it('marks the order refunded once Razorpay reports the refund processed', async () => {
     const { order, paymentId } = await createPaidOrderFixture();
     const adminId = await createStaff('admin');
-    const cancel = await staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled', note: 'Kitchen closed' });
+    const cancel = await staffRepo(adminId).updateOrderStatus({
+      orderId: order.order_id,
+      status: 'cancelled',
+      note: 'Kitchen closed',
+    });
     const refundId = cancel.refund?.refund_id;
     expect(refundId).toBeDefined();
 
@@ -326,7 +390,12 @@ describe('refunds', () => {
 
     // Duplicate "processed" events must not double count.
     for (let i = 0; i < 2; i++) {
-      await repo.recordRefundEvent({ providerRefundId, providerPaymentId: paymentId, amountPaise: SAMPLE_CART_TOTAL, status: 'processed' });
+      await repo.recordRefundEvent({
+        providerRefundId,
+        providerPaymentId: paymentId,
+        amountPaise: SAMPLE_CART_TOTAL,
+        status: 'processed',
+      });
     }
     expect(await orderRow(order.order_id)).toMatchObject({ status: 'cancelled', payment_status: 'refunded' });
     const { rows } = await superQuery<{ amount_refunded_paise: number; status: string }>(
@@ -350,15 +419,25 @@ describe('refunds', () => {
   it('guards against concurrent refund submissions', async () => {
     const { order } = await createPaidOrderFixture();
     const adminId = await createStaff('admin');
-    await staffRepo(adminId).updateOrderStatus({ orderId: order.order_id, status: 'cancelled', note: 'Duplicate order' });
-    await expect(staffRepo(adminId).prepareRefund(order.order_id)).rejects.toMatchObject({ code: 'REFUND_IN_PROGRESS' });
+    await staffRepo(adminId).updateOrderStatus({
+      orderId: order.order_id,
+      status: 'cancelled',
+      note: 'Duplicate order',
+    });
+    await expect(staffRepo(adminId).prepareRefund(order.order_id)).rejects.toMatchObject({
+      code: 'REFUND_IN_PROGRESS',
+    });
   });
 });
 
 describe('dashboard statistics', () => {
   it('counts only verified payments as revenue and subtracts processed refunds', async () => {
     const adminId = await createStaff('admin');
-    const before = await rpc(sessions.user(adminId)).call<{ gross_revenue_paise: number; net_revenue_paise: number; refunded_paise: number }>('get_dashboard_stats');
+    const before = await rpc(sessions.user(adminId)).call<{
+      gross_revenue_paise: number;
+      net_revenue_paise: number;
+      refunded_paise: number;
+    }>('get_dashboard_stats');
 
     await createPendingOrderFixture(); // unpaid: must not count
     const paid = await createPaidOrderFixture();
@@ -370,7 +449,11 @@ describe('dashboard statistics', () => {
       status: 'processed',
     });
 
-    const after = await rpc(sessions.user(adminId)).call<{ gross_revenue_paise: number; net_revenue_paise: number; refunded_paise: number }>('get_dashboard_stats');
+    const after = await rpc(sessions.user(adminId)).call<{
+      gross_revenue_paise: number;
+      net_revenue_paise: number;
+      refunded_paise: number;
+    }>('get_dashboard_stats');
     expect(after.gross_revenue_paise - before.gross_revenue_paise).toBe(2 * SAMPLE_CART_TOTAL);
     expect(after.refunded_paise - before.refunded_paise).toBe(SAMPLE_CART_TOTAL);
     expect(after.net_revenue_paise - before.net_revenue_paise).toBe(SAMPLE_CART_TOTAL);

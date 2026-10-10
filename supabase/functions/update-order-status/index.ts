@@ -1,6 +1,10 @@
 import { loadPaymentConfig } from '../_shared/config.ts';
 import { allowedOrigins, getEnv } from '../_shared/deno/env.ts';
-import { createAuthenticator, createServiceRpcClient, createUserRpcClient } from '../_shared/deno/supabase.ts';
+import {
+  createAuthenticator,
+  createServiceRpcClient,
+  createUserRpcClient,
+} from '../_shared/deno/supabase.ts';
 import { createRazorpayApi } from '../_shared/razorpay.ts';
 import { OrdersRepository, StaffRepository } from '../_shared/repository.ts';
 import { updateOrderStatusHandler } from './handler.ts';

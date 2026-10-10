@@ -9,7 +9,11 @@ import { useMenu } from './use-menu';
  * Keeps the persisted cart in step with the live menu: refreshes names and
  * prices and flags lines that can no longer be ordered.
  */
-export function useCartSync(): { changes: CartChange[]; unavailableLineIds: Set<string>; menuLoaded: boolean } {
+export function useCartSync(): {
+  changes: CartChange[];
+  unavailableLineIds: Set<string>;
+  menuLoaded: boolean;
+} {
   const { lines, dispatch } = useCart();
   const menu = useMenu();
   const lastApplied = useRef<string>('');

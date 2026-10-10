@@ -32,7 +32,10 @@ export function loadPaymentConfig(env: EnvReader): PaymentConfig {
     problem = 'RAZORPAY_KEY_ID must start with rzp_test_ or rzp_live_.';
   } else if (mode === 'live' && env('ALLOW_LIVE_PAYMENTS') !== 'true') {
     problem = 'Live Razorpay keys are configured but ALLOW_LIVE_PAYMENTS is not "true".';
-  } else if (!apiBaseUrl.startsWith('https://') && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(apiBaseUrl)) {
+  } else if (
+    !apiBaseUrl.startsWith('https://') &&
+    !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(apiBaseUrl)
+  ) {
     problem = 'RAZORPAY_API_BASE_URL must use https.';
   }
 

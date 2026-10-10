@@ -1,4 +1,11 @@
-import { EMPTY_CART, MAX_CART_LINES, MAX_NOTE_LENGTH, MAX_QUANTITY_PER_LINE, type CartLine, type CartState } from './cart';
+import {
+  EMPTY_CART,
+  MAX_CART_LINES,
+  MAX_NOTE_LENGTH,
+  MAX_QUANTITY_PER_LINE,
+  type CartLine,
+  type CartState,
+} from './cart';
 
 export const CART_STORAGE_KEY = 'campus-table:cart:v1';
 

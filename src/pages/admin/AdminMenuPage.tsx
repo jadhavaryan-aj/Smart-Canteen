@@ -20,7 +20,12 @@ import { usePageTitle } from '@/hooks/use-page-title';
 import { messageFor } from '@/lib/errors';
 import { formatPaise } from '@/lib/money';
 import { cn } from '@/lib/utils';
-import { deleteMenuItem, fetchAdminMenu, setMenuItemAvailability, updateMenuItemFlags } from '@/services/admin/menu';
+import {
+  deleteMenuItem,
+  fetchAdminMenu,
+  setMenuItemAvailability,
+  updateMenuItemFlags,
+} from '@/services/admin/menu';
 import type { MenuItem } from '@/types/domain';
 
 export default function AdminMenuPage() {
@@ -125,10 +130,25 @@ export default function AdminMenuPage() {
           <TabsContent value="items">
             <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft sm:flex-row sm:items-center">
               <div className="relative sm:w-72">
-                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                <Input type="search" aria-label="Search items" placeholder="Search items" value={search} onChange={(event) => setSearch(event.target.value)} className="h-10 pl-9" />
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="search"
+                  aria-label="Search items"
+                  placeholder="Search items"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  className="h-10 pl-9"
+                />
               </div>
-              <NativeSelect aria-label="Filter by category" value={category} onChange={(event) => setCategory(event.target.value)} className="sm:w-56">
+              <NativeSelect
+                aria-label="Filter by category"
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                className="sm:w-56"
+              >
                 <option value="all">All categories</option>
                 {menu.data.categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -148,26 +168,51 @@ export default function AdminMenuPage() {
             ) : (
               <div className="space-y-6">
                 {groups.map(({ category: group, items }) => (
-                  <section key={group.id} aria-labelledby={`admin-cat-${group.id}`} className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
-                    <h2 id={`admin-cat-${group.id}`} className="flex items-center gap-2 border-b border-border bg-muted/40 px-5 py-3 font-semibold">
+                  <section
+                    key={group.id}
+                    aria-labelledby={`admin-cat-${group.id}`}
+                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft"
+                  >
+                    <h2
+                      id={`admin-cat-${group.id}`}
+                      className="flex items-center gap-2 border-b border-border bg-muted/40 px-5 py-3 font-semibold"
+                    >
                       {group.name}
-                      {!group.isActive ? <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Hidden</span> : null}
+                      {!group.isActive ? (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                          Hidden
+                        </span>
+                      ) : null}
                     </h2>
-                    {items.length === 0 ? <p className="p-5 text-sm text-muted-foreground">No items in this category.</p> : null}
+                    {items.length === 0 ? (
+                      <p className="p-5 text-sm text-muted-foreground">No items in this category.</p>
+                    ) : null}
                     <ul className="divide-y divide-border">
                       {items.map((item) => (
-                        <li key={item.id} className={cn('flex flex-wrap items-center gap-4 px-5 py-3', !item.isActive && 'opacity-60')}>
+                        <li
+                          key={item.id}
+                          className={cn(
+                            'flex flex-wrap items-center gap-4 px-5 py-3',
+                            !item.isActive && 'opacity-60',
+                          )}
+                        >
                           <FoodImage src={item.imageUrl} alt={item.name} className="size-14 rounded-xl" />
                           <div className="min-w-0 flex-1">
                             <p className="flex items-center gap-2 font-semibold">
                               <VegIndicator vegetarian={item.isVegetarian} className="size-3.5" />
                               {item.name}
-                              {item.isFeatured ? <Star className="size-3.5 fill-honey text-honey" aria-label="Featured" /> : null}
-                              {!item.isActive ? <span className="text-xs font-medium text-muted-foreground">(archived)</span> : null}
+                              {item.isFeatured ? (
+                                <Star className="size-3.5 fill-honey text-honey" aria-label="Featured" />
+                              ) : null}
+                              {!item.isActive ? (
+                                <span className="text-xs font-medium text-muted-foreground">(archived)</span>
+                              ) : null}
                             </p>
                             <p className="tabular text-sm text-muted-foreground">
                               {formatPaise(item.pricePaise)}
-                              {item.options.length > 0 ? ` · ${item.options.length} option${item.options.length === 1 ? '' : 's'}` : ''}
+                              {item.options.length > 0
+                                ? ` · ${item.options.length} option${item.options.length === 1 ? '' : 's'}`
+                                : ''}
                             </p>
                           </div>
                           <label className="flex items-center gap-2 text-sm font-semibold">
@@ -177,7 +222,9 @@ export default function AdminMenuPage() {
                               onCheckedChange={(value) => availability.mutate({ id: item.id, value })}
                               aria-label={`${item.name} in stock`}
                             />
-                            <span className={item.isAvailable ? 'text-status-ready' : 'text-status-cancelled'}>
+                            <span
+                              className={item.isAvailable ? 'text-status-ready' : 'text-status-cancelled'}
+                            >
                               {item.isAvailable ? 'In stock' : 'Sold out'}
                             </span>
                           </label>
@@ -186,7 +233,9 @@ export default function AdminMenuPage() {
                               <label className="mr-2 flex items-center gap-2 text-sm">
                                 <Switch
                                   checked={item.isActive}
-                                  onCheckedChange={(value) => flags.mutate({ id: item.id, patch: { is_active: value } })}
+                                  onCheckedChange={(value) =>
+                                    flags.mutate({ id: item.id, patch: { is_active: value } })
+                                  }
                                   aria-label={`${item.name} listed on menu`}
                                 />
                                 Listed
@@ -194,8 +243,12 @@ export default function AdminMenuPage() {
                               <Button
                                 variant="ghost"
                                 size="icon-sm"
-                                aria-label={item.isFeatured ? `Unfeature ${item.name}` : `Feature ${item.name}`}
-                                onClick={() => flags.mutate({ id: item.id, patch: { is_featured: !item.isFeatured } })}
+                                aria-label={
+                                  item.isFeatured ? `Unfeature ${item.name}` : `Feature ${item.name}`
+                                }
+                                onClick={() =>
+                                  flags.mutate({ id: item.id, patch: { is_featured: !item.isFeatured } })
+                                }
                               >
                                 <Star className={cn('size-4', item.isFeatured && 'fill-honey text-honey')} />
                               </Button>
@@ -215,7 +268,11 @@ export default function AdminMenuPage() {
                                 size="icon-sm"
                                 aria-label={`Delete ${item.name}`}
                                 onClick={() => {
-                                  if (window.confirm(`Delete “${item.name}”? Consider switching off “Listed” instead to keep it for later.`)) {
+                                  if (
+                                    window.confirm(
+                                      `Delete “${item.name}”? Consider switching off “Listed” instead to keep it for later.`,
+                                    )
+                                  ) {
                                     remove.mutate(item.id);
                                   }
                                 }}
@@ -242,7 +299,12 @@ export default function AdminMenuPage() {
       )}
 
       {isAdmin && menu.data ? (
-        <MenuItemDialog item={editing} categories={menu.data.categories} open={dialogOpen} onOpenChange={setDialogOpen} />
+        <MenuItemDialog
+          item={editing}
+          categories={menu.data.categories}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
       ) : null}
     </div>
   );

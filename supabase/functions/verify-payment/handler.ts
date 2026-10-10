@@ -74,11 +74,22 @@ export function verifyPaymentHandler(deps: VerifyPaymentDeps) {
 
       const parsed = verifyPaymentSchema.safeParse(await readJsonBody(request));
       if (!parsed.success) {
-        throw new HttpError(400, 'INVALID_REQUEST', 'Invalid payment confirmation.', formatZodError(parsed.error));
+        throw new HttpError(
+          400,
+          'INVALID_REQUEST',
+          'Invalid payment confirmation.',
+          formatZodError(parsed.error),
+        );
       }
       const body = parsed.data;
 
-      if (!(await deps.repo.checkRateLimit(`verify-payment:user:${user.id}`, limits.perUser, limits.windowSeconds))) {
+      if (
+        !(await deps.repo.checkRateLimit(
+          `verify-payment:user:${user.id}`,
+          limits.perUser,
+          limits.windowSeconds,
+        ))
+      ) {
         throw new HttpError(429, 'RATE_LIMITED', 'Too many attempts. Please wait a moment.');
       }
 
@@ -137,7 +148,8 @@ export function verifyPaymentHandler(deps: VerifyPaymentDeps) {
         return json(
           {
             state: 'failed',
-            message: payment.error_description || 'The payment did not go through. You have not been charged.',
+            message:
+              payment.error_description || 'The payment did not go through. You have not been charged.',
             order: orderSummary(context),
           },
           200,
@@ -188,7 +200,8 @@ export function verifyPaymentHandler(deps: VerifyPaymentDeps) {
           return json(
             {
               state: 'paid_after_cancellation',
-              message: 'Your payment was received after this order was cancelled. The canteen will refund it.',
+              message:
+                'Your payment was received after this order was cancelled. The canteen will refund it.',
               order: orderSummary(context, result),
             },
             200,

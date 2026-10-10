@@ -42,7 +42,9 @@ export function mapOption(row: Tables<'menu_item_options'>): MenuItemOption {
   };
 }
 
-export function mapMenuItem(row: Tables<'menu_items'> & { options?: Tables<'menu_item_options'>[] | null }): MenuItem {
+export function mapMenuItem(
+  row: Tables<'menu_items'> & { options?: Tables<'menu_item_options'>[] | null },
+): MenuItem {
   return {
     id: row.id,
     categoryId: row.category_id,
@@ -69,7 +71,9 @@ export function mapOrderingStatus(raw: unknown): OrderingStatus {
     isOpen: value.is_open === true,
     reason: (str(value.reason) || 'disabled') as OrderingStatus['reason'],
     message: strOrNull(value.message),
-    todayHours: today ? { open: str(today.open), close: str(today.close), closed: today.closed === true } : null,
+    todayHours: today
+      ? { open: str(today.open), close: str(today.close), closed: today.closed === true }
+      : null,
     nextOpening: next ? { day: str(next.day) as DayKey, date: str(next.date), time: str(next.time) } : null,
   };
 }
@@ -147,10 +151,12 @@ export function mapReceipt(raw: unknown): OrderReceipt {
       unitPricePaise: num(line.unit_price_paise),
       lineTotalPaise: num(line.line_total_paise),
       isVegetarian: line.is_vegetarian === true,
-      customizations: (Array.isArray(line.customizations) ? line.customizations.map(asRecord) : []).map((c) => ({
-        name: str(c.name),
-        priceDeltaPaise: num(c.price_delta_paise),
-      })),
+      customizations: (Array.isArray(line.customizations) ? line.customizations.map(asRecord) : []).map(
+        (c) => ({
+          name: str(c.name),
+          priceDeltaPaise: num(c.price_delta_paise),
+        }),
+      ),
       note: strOrNull(line.note),
     })),
     payment: payment
@@ -165,7 +171,10 @@ export function mapReceipt(raw: unknown): OrderReceipt {
       status: str(entry.status) as OrderReceipt['status'],
       at: str(entry.at),
     })),
-    canteen: { name: str(canteen.name) || 'Campus Table', pickupInstructions: strOrNull(canteen.pickup_instructions) },
+    canteen: {
+      name: str(canteen.name) || 'Campus Table',
+      pickupInstructions: strOrNull(canteen.pickup_instructions),
+    },
     cancellationReason: strOrNull(value.cancellation_reason),
     isOwner: value.is_owner === true,
     canResumePayment: value.can_resume_payment === true,
@@ -175,7 +184,15 @@ export function mapReceipt(raw: unknown): OrderReceipt {
 export function mapMyOrder(
   row: Pick<
     Tables<'orders'>,
-    'id' | 'order_number' | 'status' | 'payment_status' | 'total_paise' | 'item_count' | 'created_at' | 'paid_at' | 'payment_expires_at'
+    | 'id'
+    | 'order_number'
+    | 'status'
+    | 'payment_status'
+    | 'total_paise'
+    | 'item_count'
+    | 'created_at'
+    | 'paid_at'
+    | 'payment_expires_at'
   >,
 ): MyOrderSummary {
   return {

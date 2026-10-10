@@ -21,7 +21,12 @@ export default defineConfig({
           if (id.includes('@supabase')) return 'supabase';
           if (/node_modules\/(motion|framer-motion|motion-dom|motion-utils)\//.test(id)) return 'motion';
           if (/node_modules\/(zod|react-hook-form|@hookform)\//.test(id)) return 'forms';
-          if (/node_modules\/(radix-ui|@radix-ui|@floating-ui|react-remove-scroll|react-remove-scroll-bar|react-style-singleton|use-callback-ref|use-sidecar|aria-hidden|get-nonce|detect-node-es)\//.test(id)) return 'ui';
+          if (
+            /node_modules\/(radix-ui|@radix-ui|@floating-ui|react-remove-scroll|react-remove-scroll-bar|react-style-singleton|use-callback-ref|use-sidecar|aria-hidden|get-nonce|detect-node-es)\//.test(
+              id,
+            )
+          )
+            return 'ui';
           if (id.includes('@tanstack')) return 'query';
           return undefined;
         },

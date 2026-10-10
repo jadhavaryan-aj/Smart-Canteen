@@ -6,15 +6,10 @@
 import type { RpcClient } from './rpc.ts';
 
 export type OrderStatus =
-  | 'payment_pending'
-  | 'confirmed'
-  | 'accepted'
-  | 'preparing'
-  | 'ready'
-  | 'completed'
-  | 'cancelled';
+  'payment_pending' | 'confirmed' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refund_pending' | 'partially_refunded' | 'refunded';
+export type PaymentStatus =
+  'pending' | 'paid' | 'failed' | 'refund_pending' | 'partially_refunded' | 'refunded';
 
 export interface CartLineInput {
   menuItemId: string;
@@ -127,7 +122,9 @@ export class OrdersRepository {
     });
   }
 
-  getPaymentContext(lookup: { orderId: string } | { providerOrderId: string }): Promise<PaymentContext | null> {
+  getPaymentContext(
+    lookup: { orderId: string } | { providerOrderId: string },
+  ): Promise<PaymentContext | null> {
     return this.rpc.call<PaymentContext | null>('get_payment_context', {
       p_order_id: 'orderId' in lookup ? lookup.orderId : null,
       p_provider_order_id: 'providerOrderId' in lookup ? lookup.providerOrderId : null,

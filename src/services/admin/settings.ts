@@ -13,7 +13,11 @@ export async function fetchAdminSettings(): Promise<AdminSettings> {
 }
 
 export async function updateSettings(patch: TablesUpdate<'canteen_settings'>): Promise<void> {
-  const { data, error } = await getAdminSupabase().from('canteen_settings').update(patch).eq('id', 1).select('id');
+  const { data, error } = await getAdminSupabase()
+    .from('canteen_settings')
+    .update(patch)
+    .eq('id', 1)
+    .select('id');
   if (error) throw fromPostgrestError(error);
   if (!data || data.length === 0) {
     throw fromPostgrestError({ message: 'FORBIDDEN', hint: 'Only administrators can change settings.' });

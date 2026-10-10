@@ -9,7 +9,9 @@ export async function fetchDashboardStats(day?: string): Promise<DashboardStats>
   if (error) throw fromPostgrestError(error);
   const raw = (data ?? {}) as Record<string, unknown>;
   const num = (key: string) => Number(raw[key] ?? 0);
-  const activity = Array.isArray(raw.recent_activity) ? (raw.recent_activity as Record<string, unknown>[]) : [];
+  const activity = Array.isArray(raw.recent_activity)
+    ? (raw.recent_activity as Record<string, unknown>[])
+    : [];
   return {
     day: String(raw.day ?? ''),
     timezone: String(raw.timezone ?? 'Asia/Kolkata'),

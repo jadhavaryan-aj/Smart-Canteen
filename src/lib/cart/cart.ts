@@ -226,7 +226,13 @@ export function reconcileCartWithMenu(
     const previousPaise = unitPricePaise(line);
     const currentPaise = unitPricePaise(updated);
     if (!optionProblem && previousPaise !== currentPaise) {
-      changes.push({ type: 'price_changed', lineId: line.lineId, name: item.name, previousPaise, currentPaise });
+      changes.push({
+        type: 'price_changed',
+        lineId: line.lineId,
+        name: item.name,
+        previousPaise,
+        currentPaise,
+      });
     }
     return updated;
   });

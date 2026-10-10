@@ -31,7 +31,10 @@ export default function AdminLoginPage() {
   const queryClient = useQueryClient();
   const session = useStaffSession();
   const [error, setError] = useState<string | null>(null);
-  const form = useForm<LoginValues>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
   if (!supabaseConfig.isConfigured) {
     return (
@@ -77,7 +80,12 @@ export default function AdminLoginPage() {
           </Field>
           <Field id="password" label="Password" error={form.formState.errors.password?.message}>
             {(props) => (
-              <Input {...props} type="password" autoComplete="current-password" {...form.register('password')} />
+              <Input
+                {...props}
+                type="password"
+                autoComplete="current-password"
+                {...form.register('password')}
+              />
             )}
           </Field>
           <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>

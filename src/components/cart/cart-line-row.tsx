@@ -37,7 +37,11 @@ export function CartLineRow({ line, unavailable = false }: { line: CartLine; una
             {line.options.length > 0 ? (
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {line.options
-                  .map((option) => (option.priceDeltaPaise ? `${option.name} (+${formatPaise(option.priceDeltaPaise)})` : option.name))
+                  .map((option) =>
+                    option.priceDeltaPaise
+                      ? `${option.name} (+${formatPaise(option.priceDeltaPaise)})`
+                      : option.name,
+                  )
                   .join(' · ')}
               </p>
             ) : null}
@@ -69,7 +73,9 @@ export function CartLineRow({ line, unavailable = false }: { line: CartLine; una
             <div className="text-right">
               <Price paise={lineTotalPaise(line)} className="block" />
               {line.quantity > 1 ? (
-                <span className="tabular text-xs text-muted-foreground">{formatPaise(unitPricePaise(line))} each</span>
+                <span className="tabular text-xs text-muted-foreground">
+                  {formatPaise(unitPricePaise(line))} each
+                </span>
               ) : null}
             </div>
           </div>

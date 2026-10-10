@@ -55,7 +55,17 @@ export default function AdminOrderDetailPage() {
   if (order.isPending) return <Skeleton className="mx-auto h-[32rem] max-w-5xl rounded-2xl" />;
   if (order.isError) return <ErrorState error={order.error} onRetry={() => void order.refetch()} />;
   if (!order.data) {
-    return <EmptyState icon={ReceiptText} title="Order not found" action={<Button asChild variant="outline"><Link to="/admin/orders">All orders</Link></Button>} />;
+    return (
+      <EmptyState
+        icon={ReceiptText}
+        title="Order not found"
+        action={
+          <Button asChild variant="outline">
+            <Link to="/admin/orders">All orders</Link>
+          </Button>
+        }
+      />
+    );
   }
 
   const data = order.data;
@@ -65,7 +75,8 @@ export default function AdminOrderDetailPage() {
     isAdmin &&
     data.status === 'cancelled' &&
     (data.paymentStatus === 'paid' ||
-      (data.paymentStatus === 'refund_pending' && (!lastRefund || (lastRefund.status === 'failed' && !lastRefund.providerRefundId))));
+      (data.paymentStatus === 'refund_pending' &&
+        (!lastRefund || (lastRefund.status === 'failed' && !lastRefund.providerRefundId))));
   const canCancel = isAdmin && !['completed', 'cancelled'].includes(data.status);
 
   return (
@@ -112,7 +123,12 @@ export default function AdminOrderDetailPage() {
             </Button>
           ) : null}
           {canCancel ? (
-            <Button size="lg" variant="ghost" className="text-destructive" onClick={() => setCancelOpen(true)}>
+            <Button
+              size="lg"
+              variant="ghost"
+              className="text-destructive"
+              onClick={() => setCancelOpen(true)}
+            >
               <XCircle /> Cancel order
             </Button>
           ) : null}
@@ -120,7 +136,10 @@ export default function AdminOrderDetailPage() {
       ) : null}
 
       <div className="grid items-start gap-6 lg:grid-cols-[1.3fr_1fr]">
-        <section aria-labelledby="items-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+        <section
+          aria-labelledby="items-heading"
+          className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+        >
           <h2 id="items-heading" className="text-lg font-semibold">
             Items
           </h2>
@@ -135,14 +154,24 @@ export default function AdminOrderDetailPage() {
                   </p>
                   {item.customizations.length > 0 ? (
                     <p className="mt-0.5 text-sm text-honey">
-                      + {item.customizations.map((c) => `${c.name}${c.priceDeltaPaise ? ` (${formatPaise(c.priceDeltaPaise)})` : ''}`).join(', ')}
+                      +{' '}
+                      {item.customizations
+                        .map(
+                          (c) =>
+                            `${c.name}${c.priceDeltaPaise ? ` (${formatPaise(c.priceDeltaPaise)})` : ''}`,
+                        )
+                        .join(', ')}
                     </p>
                   ) : null}
-                  {item.note ? <p className="mt-0.5 text-sm text-muted-foreground italic">“{item.note}”</p> : null}
+                  {item.note ? (
+                    <p className="mt-0.5 text-sm text-muted-foreground italic">“{item.note}”</p>
+                  ) : null}
                 </div>
                 <div className="text-right text-sm">
                   <p className="tabular font-semibold">{formatPaise(item.lineTotalPaise)}</p>
-                  <p className="tabular text-xs text-muted-foreground">{formatPaise(item.unitPricePaise)} each</p>
+                  <p className="tabular text-xs text-muted-foreground">
+                    {formatPaise(item.unitPricePaise)} each
+                  </p>
                 </div>
               </li>
             ))}
@@ -154,12 +183,17 @@ export default function AdminOrderDetailPage() {
           <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
             <Detail label="Customer">{data.customerName}</Detail>
             <Detail label="Student ID">{data.studentIdentifier ?? '—'}</Detail>
-            {data.cancellationReason ? <Detail label="Cancellation reason">{data.cancellationReason}</Detail> : null}
+            {data.cancellationReason ? (
+              <Detail label="Cancellation reason">{data.cancellationReason}</Detail>
+            ) : null}
           </dl>
         </section>
 
         <div className="space-y-6">
-          <section aria-labelledby="payment-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+          <section
+            aria-labelledby="payment-heading"
+            className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+          >
             <h2 id="payment-heading" className="text-lg font-semibold">
               Payment
             </h2>
@@ -178,22 +212,32 @@ export default function AdminOrderDetailPage() {
                     ? `${formatDateTime(data.payment.verifiedAt)} via ${data.payment.verificationSource === 'webhook' ? 'webhook' : 'checkout signature'}`
                     : 'Not verified'}
                 </Detail>
-                {data.payment.method ? <Detail label="Method">{data.payment.method.toUpperCase()}</Detail> : null}
+                {data.payment.method ? (
+                  <Detail label="Method">{data.payment.method.toUpperCase()}</Detail>
+                ) : null}
                 {data.payment.amountRefundedPaise > 0 ? (
                   <Detail label="Refunded">{formatPaise(data.payment.amountRefundedPaise)}</Detail>
                 ) : null}
-                {data.payment.failureReason ? <Detail label="Last failure">{data.payment.failureReason}</Detail> : null}
+                {data.payment.failureReason ? (
+                  <Detail label="Last failure">{data.payment.failureReason}</Detail>
+                ) : null}
               </dl>
             ) : (
-              <p className="mt-3 text-sm text-muted-foreground">No payment has been started for this order.</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                No payment has been started for this order.
+              </p>
             )}
             <p className="mt-4 text-xs text-muted-foreground">
-              Payment details are recorded only by the server after verifying Razorpay’s signature. They cannot be edited here.
+              Payment details are recorded only by the server after verifying Razorpay’s signature. They
+              cannot be edited here.
             </p>
           </section>
 
           {data.refunds.length > 0 ? (
-            <section aria-labelledby="refunds-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+            <section
+              aria-labelledby="refunds-heading"
+              className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+            >
               <h2 id="refunds-heading" className="text-lg font-semibold">
                 Refunds
               </h2>
@@ -209,29 +253,40 @@ export default function AdminOrderDetailPage() {
                       {entry.initiatedBy ? ` · by ${entry.initiatedBy}` : ''}
                       {entry.providerRefundId ? ` · ${entry.providerRefundId}` : ''}
                     </p>
-                    {entry.failureReason ? <p className="mt-1 text-xs text-status-cancelled">{entry.failureReason}</p> : null}
+                    {entry.failureReason ? (
+                      <p className="mt-1 text-xs text-status-cancelled">{entry.failureReason}</p>
+                    ) : null}
                   </li>
                 ))}
               </ul>
             </section>
           ) : null}
 
-          <section aria-labelledby="history-heading" className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+          <section
+            aria-labelledby="history-heading"
+            className="rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6"
+          >
             <h2 id="history-heading" className="text-lg font-semibold">
               Status history
             </h2>
             <ol className="mt-3 space-y-3 border-l-2 border-border pl-4 text-sm">
               {data.history.map((entry) => (
                 <li key={entry.id} className="relative">
-                  <span className="absolute top-1.5 -left-[1.3rem] size-2.5 rounded-full bg-primary ring-4 ring-card" aria-hidden="true" />
+                  <span
+                    className="absolute top-1.5 -left-[1.3rem] size-2.5 rounded-full bg-primary ring-4 ring-card"
+                    aria-hidden="true"
+                  />
                   <p className="font-semibold">
                     {entry.previousStatus ? `${ADMIN_STATUS_LABEL[entry.previousStatus]} → ` : ''}
                     {ADMIN_STATUS_LABEL[entry.newStatus]}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatDateTime(entry.createdAt)} · {entry.actor ?? SOURCE_LABEL[entry.source] ?? entry.source}
+                    {formatDateTime(entry.createdAt)} ·{' '}
+                    {entry.actor ?? SOURCE_LABEL[entry.source] ?? entry.source}
                   </p>
-                  {entry.note ? <p className="mt-0.5 text-xs text-muted-foreground italic">{entry.note}</p> : null}
+                  {entry.note ? (
+                    <p className="mt-0.5 text-xs text-muted-foreground italic">{entry.note}</p>
+                  ) : null}
                 </li>
               ))}
             </ol>

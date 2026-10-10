@@ -17,7 +17,15 @@ export function BrandMonogram({ className }: { className?: string }) {
   );
 }
 
-export function BrandMark({ name = brand.name, to = '/', className }: { name?: string; to?: string; className?: string }) {
+export function BrandMark({
+  name = brand.name,
+  to = '/',
+  className,
+}: {
+  name?: string;
+  to?: string;
+  className?: string;
+}) {
   return (
     <Link
       to={to}

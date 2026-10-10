@@ -340,8 +340,14 @@ export type Database = {
       get_public_settings: { Args: Record<PropertyKey, never>; Returns: Json };
       get_ordering_status: { Args: { p_at?: string }; Returns: Json };
       quote_cart: { Args: { p_items: Json }; Returns: Json };
-      get_order_receipt: { Args: { p_order_id?: string | null; p_access_token?: string | null }; Returns: Json };
-      get_my_staff_role: { Args: Record<PropertyKey, never>; Returns: Database['public']['Enums']['app_role'] | null };
+      get_order_receipt: {
+        Args: { p_order_id?: string | null; p_access_token?: string | null };
+        Returns: Json;
+      };
+      get_my_staff_role: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database['public']['Enums']['app_role'] | null;
+      };
       get_dashboard_stats: { Args: { p_day?: string | null }; Returns: Json };
       set_menu_item_availability: { Args: { p_item_id: string; p_is_available: boolean }; Returns: Json };
       set_ordering_paused: { Args: { p_paused: boolean; p_message?: string | null }; Returns: Json };
@@ -359,7 +365,8 @@ export type Database = {
     };
     Enums: {
       app_role: 'admin' | 'staff';
-      order_status: 'payment_pending' | 'confirmed' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+      order_status:
+        'payment_pending' | 'confirmed' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
       payment_status: 'pending' | 'paid' | 'failed' | 'refund_pending' | 'partially_refunded' | 'refunded';
       payment_record_status: 'created' | 'captured' | 'failed' | 'partially_refunded' | 'refunded';
       refund_status: 'pending' | 'processed' | 'failed';

@@ -35,12 +35,7 @@ export interface OpeningHoursDay {
 export type OpeningHours = Record<DayKey, OpeningHoursDay>;
 
 export type OrderingClosedReason =
-  | 'open'
-  | 'disabled'
-  | 'paused'
-  | 'closed_today'
-  | 'before_opening'
-  | 'after_closing';
+  'open' | 'disabled' | 'paused' | 'closed_today' | 'before_opening' | 'after_closing';
 
 export interface OrderingStatus {
   isOpen: boolean;

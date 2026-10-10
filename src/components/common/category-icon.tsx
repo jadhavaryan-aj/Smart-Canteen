@@ -1,4 +1,12 @@
-import { ChefHat, Coffee, CookingPot, Croissant, Sandwich, UtensilsCrossed, type LucideIcon } from 'lucide-react';
+import {
+  ChefHat,
+  Coffee,
+  CookingPot,
+  Croissant,
+  Sandwich,
+  UtensilsCrossed,
+  type LucideIcon,
+} from 'lucide-react';
 
 const BY_SLUG: Record<string, LucideIcon> = {
   breakfast: Croissant,

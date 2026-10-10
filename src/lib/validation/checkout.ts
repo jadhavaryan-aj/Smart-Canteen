@@ -21,10 +21,14 @@ export function checkoutDetailsSchema(mode: StudentIdMode, studentIdLabel: strin
       .trim()
       .min(2, 'Please enter at least 2 characters.')
       .max(40, 'Please keep your name under 40 characters.')
-      .regex(NAME_PATTERN, "Use letters, numbers, spaces, apostrophes, dots or hyphens."),
+      .regex(NAME_PATTERN, 'Use letters, numbers, spaces, apostrophes, dots or hyphens.'),
     studentIdentifier:
-      mode === 'required' ? studentId.refine((value) => value.length > 0, { message: `${studentIdLabel} is required.` }) : studentId,
-    acceptTerms: z.boolean().refine((value) => value, { message: 'Please accept the ordering terms to continue.' }),
+      mode === 'required'
+        ? studentId.refine((value) => value.length > 0, { message: `${studentIdLabel} is required.` })
+        : studentId,
+    acceptTerms: z
+      .boolean()
+      .refine((value) => value, { message: 'Please accept the ordering terms to continue.' }),
   });
 }
 

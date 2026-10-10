@@ -44,7 +44,9 @@ export default async function setup(project: TestProject) {
     await client.query('set client_min_messages = warning');
     await client.query(readFileSync(path.join(root, 'supabase/tests/shim/supabase-shim.sql'), 'utf8'));
     const migrationsDir = path.join(root, 'supabase/migrations');
-    for (const file of readdirSync(migrationsDir).filter((name) => name.endsWith('.sql')).sort()) {
+    for (const file of readdirSync(migrationsDir)
+      .filter((name) => name.endsWith('.sql'))
+      .sort()) {
       try {
         await client.query(readFileSync(path.join(migrationsDir, file), 'utf8'));
       } catch (error) {

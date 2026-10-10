@@ -6,7 +6,12 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppError } from '@/lib/errors';
 
-const NON_RETRYABLE = new Set(['SUPABASE_NOT_CONFIGURED', 'FORBIDDEN', 'UNAUTHENTICATED', 'GUEST_AUTH_DISABLED']);
+const NON_RETRYABLE = new Set([
+  'SUPABASE_NOT_CONFIGURED',
+  'FORBIDDEN',
+  'UNAUTHENTICATED',
+  'GUEST_AUTH_DISABLED',
+]);
 
 function createQueryClient() {
   return new QueryClient({

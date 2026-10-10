@@ -9,7 +9,10 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn('inline-flex h-11 items-center gap-1 rounded-full bg-muted p-1 text-muted-foreground', className)}
+      className={cn(
+        'inline-flex h-11 items-center gap-1 rounded-full bg-muted p-1 text-muted-foreground',
+        className,
+      )}
       {...props}
     />
   );
@@ -29,7 +32,9 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
 }
 
 function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content data-slot="tabs-content" className={cn('outline-none', className)} {...props} />;
+  return (
+    <TabsPrimitive.Content data-slot="tabs-content" className={cn('outline-none', className)} {...props} />
+  );
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };

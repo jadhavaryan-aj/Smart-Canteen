@@ -48,13 +48,13 @@ export default function AboutPage() {
       <div className="mt-10 grid items-start gap-10 lg:grid-cols-2">
         <div className="space-y-5 text-[1.02rem] leading-relaxed text-muted-foreground">
           <p>
-            {name} is the campus canteen — fresh breakfasts, hearty lunches, quick snacks and plenty of chai, cooked in
-            our kitchen every day.
+            {name} is the campus canteen — fresh breakfasts, hearty lunches, quick snacks and plenty of chai,
+            cooked in our kitchen every day.
           </p>
           <p>
-            Online ordering lets you skip the till: choose your food from anywhere on campus, pay in a few taps, and
-            collect it from the pickup counter when it’s ready. It’s quicker for you and calmer for the kitchen at
-            rush hour.
+            Online ordering lets you skip the till: choose your food from anywhere on campus, pay in a few
+            taps, and collect it from the pickup counter when it’s ready. It’s quicker for you and calmer for
+            the kitchen at rush hour.
           </p>
           <p className="flex items-center gap-2 font-semibold text-foreground">
             <MapPin className="size-4 text-sage" aria-hidden="true" /> {brand.location}
@@ -74,14 +74,23 @@ export default function AboutPage() {
       </div>
 
       <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1fr_1.2fr]">
-        <section aria-labelledby="hours-heading" className="rounded-2xl border border-border bg-card p-6 shadow-soft sm:p-8">
+        <section
+          aria-labelledby="hours-heading"
+          className="rounded-2xl border border-border bg-card p-6 shadow-soft sm:p-8"
+        >
           <h2 id="hours-heading" className="font-display text-2xl font-medium">
             Opening hours
           </h2>
           {settings.data ? (
-            <OpeningHoursTable hours={settings.data.openingHours} timeZone={settings.data.timezone} className="mt-4" />
+            <OpeningHoursTable
+              hours={settings.data.openingHours}
+              timeZone={settings.data.timezone}
+              className="mt-4"
+            />
           ) : (
-            <p className="mt-3 text-sm text-muted-foreground">Hours will appear here once the site is connected.</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Hours will appear here once the site is connected.
+            </p>
           )}
           {settings.data?.pickupInstructions ? (
             <p className="mt-6 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground">
@@ -96,10 +105,16 @@ export default function AboutPage() {
           </h2>
           <div className="mt-4 divide-y divide-border rounded-2xl border border-border bg-card shadow-soft">
             {FAQ.map((item) => (
-              <details key={item.q} className="group px-5 py-4 sm:px-6 [&_summary::-webkit-details-marker]:hidden">
+              <details
+                key={item.q}
+                className="group px-5 py-4 sm:px-6 [&_summary::-webkit-details-marker]:hidden"
+              >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                   {item.q}
-                  <span aria-hidden="true" className="text-xl text-muted-foreground transition-transform group-open:rotate-45">
+                  <span
+                    aria-hidden="true"
+                    className="text-xl text-muted-foreground transition-transform group-open:rotate-45"
+                  >
                     +
                   </span>
                 </summary>

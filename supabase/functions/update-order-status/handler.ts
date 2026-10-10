@@ -52,7 +52,8 @@ export function updateOrderStatusHandler(deps: UpdateOrderStatusDeps) {
         providerRefundId: created.id,
         providerPaymentId: refund.provider_payment_id,
         amountPaise: created.amount,
-        status: created.status === 'processed' ? 'processed' : created.status === 'failed' ? 'failed' : 'pending',
+        status:
+          created.status === 'processed' ? 'processed' : created.status === 'failed' ? 'failed' : 'pending',
         internalRefundId: refund.refund_id,
       });
       logInfo('refund_submitted', { orderId, status: created.status });
@@ -63,7 +64,9 @@ export function updateOrderStatusHandler(deps: UpdateOrderStatusDeps) {
       };
     } catch (error) {
       const message =
-        error instanceof RazorpayApiError && error.description ? error.description : 'Razorpay did not accept the refund.';
+        error instanceof RazorpayApiError && error.description
+          ? error.description
+          : 'Razorpay did not accept the refund.';
       logWarn('refund_failed', { orderId, status: error instanceof RazorpayApiError ? error.status : null });
       await deps.repo.markRefundFailed(refund.refund_id, message);
       return { state: 'failed', amountPaise: refund.amount_paise, message };

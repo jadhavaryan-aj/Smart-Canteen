@@ -14,7 +14,13 @@ export class RpcError extends Error {
   readonly details: string | null;
   readonly hint: string | null;
 
-  constructor(input: { code: string; message: string; sqlState?: string | null; details?: string | null; hint?: string | null }) {
+  constructor(input: {
+    code: string;
+    message: string;
+    sqlState?: string | null;
+    details?: string | null;
+    hint?: string | null;
+  }) {
     super(input.message);
     this.name = 'RpcError';
     this.code = input.code;

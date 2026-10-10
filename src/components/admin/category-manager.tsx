@@ -7,7 +7,14 @@ import { toast } from 'sonner';
 
 import { categoryIcon } from '@/components/common/category-icon';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -63,27 +70,47 @@ function CategoryDialog({
           <DialogTitle>{category ? 'Edit category' : 'Add a category'}</DialogTitle>
           <DialogDescription>Categories group the menu and power the filters students see.</DialogDescription>
         </DialogHeader>
-        <form id="category-form" noValidate onSubmit={form.handleSubmit((values) => save.mutate(values))} className="grid gap-4">
+        <form
+          id="category-form"
+          noValidate
+          onSubmit={form.handleSubmit((values) => save.mutate(values))}
+          className="grid gap-4"
+        >
           <Field id="category-name" label="Name" error={form.formState.errors.name?.message}>
             {(props) => (
               <Input
                 {...props}
                 {...form.register('name', {
                   onChange: (event: { target: { value: string } }) => {
-                    if (!category) form.setValue('slug', slugify(event.target.value), { shouldValidate: true });
+                    if (!category)
+                      form.setValue('slug', slugify(event.target.value), { shouldValidate: true });
                   },
                 })}
               />
             )}
           </Field>
-          <Field id="category-slug" label="URL name" error={form.formState.errors.slug?.message} description="Used in links, e.g. /menu?category=breakfast">
+          <Field
+            id="category-slug"
+            label="URL name"
+            error={form.formState.errors.slug?.message}
+            description="Used in links, e.g. /menu?category=breakfast"
+          >
             {(props) => <Input {...props} {...form.register('slug')} />}
           </Field>
-          <Field id="category-description" label="Description" optional error={form.formState.errors.description?.message}>
+          <Field
+            id="category-description"
+            label="Description"
+            optional
+            error={form.formState.errors.description?.message}
+          >
             {(props) => <Input {...props} maxLength={160} {...form.register('description')} />}
           </Field>
           <label className="flex items-center gap-3 text-sm font-semibold">
-            <Switch checked={form.watch('isActive')} onCheckedChange={(value) => form.setValue('isActive', value)} /> Visible to students
+            <Switch
+              checked={form.watch('isActive')}
+              onCheckedChange={(value) => form.setValue('isActive', value)}
+            />{' '}
+            Visible to students
           </label>
         </form>
         <DialogFooter>
@@ -108,7 +135,11 @@ export function CategoryManager({ categories, items }: { categories: Category[];
     void queryClient.invalidateQueries({ queryKey: ['menu'] });
   };
 
-  const reorder = useMutation({ mutationFn: reorderCategories, onSuccess: invalidate, onError: (error) => toast.error(messageFor(error)) });
+  const reorder = useMutation({
+    mutationFn: reorderCategories,
+    onSuccess: invalidate,
+    onError: (error) => toast.error(messageFor(error)),
+  });
   const toggle = useMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) => setCategoryActive(id, active),
     onSuccess: invalidate,
@@ -152,10 +183,22 @@ export function CategoryManager({ categories, items }: { categories: Category[];
           return (
             <li key={category.id} className="flex flex-wrap items-center gap-3 p-4 sm:px-5">
               <div className="flex flex-col">
-                <Button variant="ghost" size="icon-sm" aria-label={`Move ${category.name} up`} disabled={index === 0 || reorder.isPending} onClick={() => move(index, -1)}>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={`Move ${category.name} up`}
+                  disabled={index === 0 || reorder.isPending}
+                  onClick={() => move(index, -1)}
+                >
                   <ArrowUp className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" aria-label={`Move ${category.name} down`} disabled={index === categories.length - 1 || reorder.isPending} onClick={() => move(index, 1)}>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={`Move ${category.name} down`}
+                  disabled={index === categories.length - 1 || reorder.isPending}
+                  onClick={() => move(index, 1)}
+                >
                   <ArrowDown className="size-4" />
                 </Button>
               </div>

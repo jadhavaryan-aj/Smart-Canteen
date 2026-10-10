@@ -10,7 +10,11 @@ interface FieldProps {
   error?: string | undefined;
   optional?: boolean;
   className?: string;
-  children: (props: { id: string; 'aria-invalid': boolean; 'aria-describedby': string | undefined }) => React.ReactNode;
+  children: (props: {
+    id: string;
+    'aria-invalid': boolean;
+    'aria-describedby': string | undefined;
+  }) => React.ReactNode;
 }
 
 /** Accessible form field wrapper: wires label, description and error message to the control. */

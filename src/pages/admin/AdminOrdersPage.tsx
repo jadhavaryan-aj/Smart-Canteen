@@ -65,13 +65,19 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <AdminPageHeader title="Orders" description="Search the full order history. Completed orders are never deleted." />
+      <AdminPageHeader
+        title="Orders"
+        description="Search the full order history. Completed orders are never deleted."
+      />
 
       <div className="mb-5 grid gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft sm:grid-cols-2 lg:grid-cols-5">
         <div className="grid gap-1.5 lg:col-span-1">
           <Label htmlFor="orders-search">Order number</Label>
           <div className="relative">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Search
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
             <Input
               id="orders-search"
               type="search"
@@ -84,7 +90,11 @@ export default function AdminOrdersPage() {
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="orders-status">Status</Label>
-          <NativeSelect id="orders-status" value={filters.status} onChange={(event) => set('status', event.target.value)}>
+          <NativeSelect
+            id="orders-status"
+            value={filters.status}
+            onChange={(event) => set('status', event.target.value)}
+          >
             <option value="all">All statuses</option>
             {ORDER_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -95,7 +105,11 @@ export default function AdminOrdersPage() {
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="orders-payment">Payment</Label>
-          <NativeSelect id="orders-payment" value={filters.paymentStatus} onChange={(event) => set('payment', event.target.value)}>
+          <NativeSelect
+            id="orders-payment"
+            value={filters.paymentStatus}
+            onChange={(event) => set('payment', event.target.value)}
+          >
             <option value="all">All payments</option>
             {PAYMENT_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -106,11 +120,23 @@ export default function AdminOrdersPage() {
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="orders-from">From</Label>
-          <Input id="orders-from" type="date" className="h-11" value={params.get('from') ?? ''} onChange={(event) => set('from', event.target.value)} />
+          <Input
+            id="orders-from"
+            type="date"
+            className="h-11"
+            value={params.get('from') ?? ''}
+            onChange={(event) => set('from', event.target.value)}
+          />
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="orders-to">To</Label>
-          <Input id="orders-to" type="date" className="h-11" value={params.get('to') ?? ''} onChange={(event) => set('to', event.target.value)} />
+          <Input
+            id="orders-to"
+            type="date"
+            className="h-11"
+            value={params.get('to') ?? ''}
+            onChange={(event) => set('to', event.target.value)}
+          />
         </div>
       </div>
 
@@ -128,30 +154,52 @@ export default function AdminOrdersPage() {
             <caption className="sr-only">Orders</caption>
             <thead className="hidden border-b border-border bg-muted/50 text-left text-xs text-muted-foreground md:table-header-group">
               <tr>
-                <th scope="col" className="px-4 py-3 font-semibold">Order</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Placed</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Customer</th>
-                <th scope="col" className="px-4 py-3 text-right font-semibold">Total</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Payment</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Status</th>
+                <th scope="col" className="px-4 py-3 font-semibold">
+                  Order
+                </th>
+                <th scope="col" className="px-4 py-3 font-semibold">
+                  Placed
+                </th>
+                <th scope="col" className="px-4 py-3 font-semibold">
+                  Customer
+                </th>
+                <th scope="col" className="px-4 py-3 text-right font-semibold">
+                  Total
+                </th>
+                <th scope="col" className="px-4 py-3 font-semibold">
+                  Payment
+                </th>
+                <th scope="col" className="px-4 py-3 font-semibold">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {orders.data.rows.map((order) => (
-                <tr key={order.id} className="grid grid-cols-2 gap-1 px-4 py-3 hover:bg-muted/40 md:table-row md:p-0">
+                <tr
+                  key={order.id}
+                  className="grid grid-cols-2 gap-1 px-4 py-3 hover:bg-muted/40 md:table-row md:p-0"
+                >
                   <td className="md:px-4 md:py-3">
-                    <Link to={`/admin/orders/${order.id}`} className="tabular font-semibold text-primary hover:underline">
+                    <Link
+                      to={`/admin/orders/${order.id}`}
+                      className="tabular font-semibold text-primary hover:underline"
+                    >
                       {order.orderNumber}
                     </Link>
                   </td>
-                  <td className="text-right text-muted-foreground md:px-4 md:py-3 md:text-left">{formatDateTime(order.createdAt)}</td>
+                  <td className="text-right text-muted-foreground md:px-4 md:py-3 md:text-left">
+                    {formatDateTime(order.createdAt)}
+                  </td>
                   <td className="md:px-4 md:py-3">
                     {order.customerName}
                     <span className="block text-xs text-muted-foreground">
                       {order.itemCount} item{order.itemCount === 1 ? '' : 's'}
                     </span>
                   </td>
-                  <td className="tabular text-right font-semibold md:px-4 md:py-3">{formatPaise(order.totalPaise)}</td>
+                  <td className="tabular text-right font-semibold md:px-4 md:py-3">
+                    {formatPaise(order.totalPaise)}
+                  </td>
                   <td className="md:px-4 md:py-3">
                     <PaymentStatusBadge status={order.paymentStatus} />
                   </td>
@@ -175,7 +223,12 @@ export default function AdminOrdersPage() {
               >
                 <ChevronLeft /> Previous
               </Button>
-              <Button variant="outline" size="sm" disabled={last >= total} onClick={() => set('page', String(filters.page + 1))}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={last >= total}
+                onClick={() => set('page', String(filters.page + 1))}
+              >
                 Next <ChevronRight />
               </Button>
             </div>

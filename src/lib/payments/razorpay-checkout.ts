@@ -118,7 +118,8 @@ export async function openRazorpayCheckout(input: {
     });
     instance.on('payment.failed', (failure) => {
       input.onAttemptFailed?.(
-        failure.error?.description ?? 'The payment did not go through. You can try again or use another method.',
+        failure.error?.description ??
+          'The payment did not go through. You can try again or use another method.',
       );
     });
     instance.open();

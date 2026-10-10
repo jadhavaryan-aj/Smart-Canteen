@@ -69,7 +69,8 @@ export function razorpayWebhookHandler(deps: RazorpayWebhookDeps) {
       case 'payment.captured':
       case 'order.paid': {
         if (!payment) return { status: 'ignored', note: 'missing payment entity' };
-        if (payment.status !== 'captured') return { status: 'ignored', note: `payment status ${payment.status}` };
+        if (payment.status !== 'captured')
+          return { status: 'ignored', note: `payment status ${payment.status}` };
         return confirmFromPayment(payment);
       }
 
@@ -78,7 +79,8 @@ export function razorpayWebhookHandler(deps: RazorpayWebhookDeps) {
         if (!payment?.order_id) return { status: 'ignored', note: 'missing payment entity' };
         const context = await deps.repo.getPaymentContext({ providerOrderId: payment.order_id });
         if (!context) return { status: 'ignored', note: 'unknown order' };
-        if (context.status !== 'payment_pending') return { status: 'ignored', note: 'order not pending; not capturing' };
+        if (context.status !== 'payment_pending')
+          return { status: 'ignored', note: 'order not pending; not capturing' };
         if (!deps.razorpay) throw new Error('Razorpay API not configured; cannot capture');
         if (payment.amount !== context.total_paise || payment.currency !== 'INR') {
           return { status: 'ignored', note: 'authorised amount mismatch; not capturing' };
@@ -103,16 +105,21 @@ export function razorpayWebhookHandler(deps: RazorpayWebhookDeps) {
           errorCode: payment.error_code ?? null,
           errorDescription: payment.error_description ?? null,
         });
-        return { status: result.result === 'unknown_order' ? 'ignored' : 'processed', note: `failure:${result.result}` };
+        return {
+          status: result.result === 'unknown_order' ? 'ignored' : 'processed',
+          note: `failure:${result.result}`,
+        };
       }
 
       case 'refund.created':
       case 'refund.processed':
       case 'refund.failed': {
         if (!refund) return { status: 'ignored', note: 'missing refund entity' };
-        const status = event === 'refund.processed' ? 'processed' : event === 'refund.failed' ? 'failed' : 'pending';
+        const status =
+          event === 'refund.processed' ? 'processed' : event === 'refund.failed' ? 'failed' : 'pending';
         const notes = refund.notes && !Array.isArray(refund.notes) ? refund.notes : {};
-        const internalRefundId = typeof notes.refund_id === 'string' && UUID_RE.test(notes.refund_id) ? notes.refund_id : null;
+        const internalRefundId =
+          typeof notes.refund_id === 'string' && UUID_RE.test(notes.refund_id) ? notes.refund_id : null;
         const result = await deps.repo.recordRefundEvent({
           providerRefundId: refund.id,
           providerPaymentId: refund.payment_id,
@@ -121,7 +128,10 @@ export function razorpayWebhookHandler(deps: RazorpayWebhookDeps) {
           internalRefundId,
           failureReason: status === 'failed' ? 'Refund failed at Razorpay' : null,
         });
-        return { status: result.result === 'unknown_payment' ? 'ignored' : 'processed', note: `refund:${result.result}` };
+        return {
+          status: result.result === 'unknown_payment' ? 'ignored' : 'processed',
+          note: `refund:${result.result}`,
+        };
       }
 
       default:
@@ -159,10 +169,16 @@ export function razorpayWebhookHandler(deps: RazorpayWebhookDeps) {
 
       const headerEventId = request.headers.get('x-razorpay-event-id');
       const eventId =
-        headerEventId && /^[A-Za-z0-9_-]{1,128}$/.test(headerEventId) ? headerEventId : `sha256:${await sha256Hex(rawBody)}`;
+        headerEventId && /^[A-Za-z0-9_-]{1,128}$/.test(headerEventId)
+          ? headerEventId
+          : `sha256:${await sha256Hex(rawBody)}`;
       const eventType = typeof body.event === 'string' ? body.event : 'unknown';
 
-      const registration = await deps.repo.beginWebhookEvent(eventId, eventType, sanitizeWebhookPayload(body));
+      const registration = await deps.repo.beginWebhookEvent(
+        eventId,
+        eventType,
+        sanitizeWebhookPayload(body),
+      );
       if (!registration.should_process) {
         return json({ status: 'duplicate' }, 200, headers);
       }

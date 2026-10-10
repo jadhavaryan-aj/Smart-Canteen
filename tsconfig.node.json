@@ -33,6 +33,7 @@
     "src/**/*.test.tsx",
     "src/test",
     "tests",
-    "supabase/tests"
+    "supabase/tests",
+    "supabase/functions/**/*.test.ts"
   ]
 }

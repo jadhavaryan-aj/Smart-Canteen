@@ -16,7 +16,10 @@ export function FeaturedItems() {
     if (!menu.data) return [];
     const available = menu.data.items.filter((item) => item.isAvailable);
     const picks = available.filter((item) => item.isFeatured);
-    return (picks.length >= 3 ? picks : [...picks, ...available.filter((item) => !item.isFeatured)]).slice(0, 4);
+    return (picks.length >= 3 ? picks : [...picks, ...available.filter((item) => !item.isFeatured)]).slice(
+      0,
+      4,
+    );
   })();
   const categoryName = (id: string) => menu.data?.categories.find((category) => category.id === id)?.name;
 
@@ -46,7 +49,11 @@ export function FeaturedItems() {
             ))}
           </div>
         ) : menu.isError ? (
-          <ErrorState error={menu.error} title="We couldn’t load the menu" onRetry={() => void menu.refetch()} />
+          <ErrorState
+            error={menu.error}
+            title="We couldn’t load the menu"
+            onRetry={() => void menu.refetch()}
+          />
         ) : featured.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">
             The menu is being updated. Please check back shortly.
@@ -54,7 +61,12 @@ export function FeaturedItems() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((item, index) => (
-              <MenuItemCard key={item.id} item={item} categoryName={categoryName(item.categoryId)} index={index} />
+              <MenuItemCard
+                key={item.id}
+                item={item}
+                categoryName={categoryName(item.categoryId)}
+                index={index}
+              />
             ))}
           </div>
         )}
